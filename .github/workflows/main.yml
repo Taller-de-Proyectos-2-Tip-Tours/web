@@ -1,3 +1,16 @@
+name: Build and deploy app to Pages
+
+on:
+  # Runs on pushes to the default branch
+  push:
+    branches: ["main"]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
