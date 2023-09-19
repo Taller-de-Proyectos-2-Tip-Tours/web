@@ -1,16 +1,21 @@
 import React, { useEffect,useReducer,useState } from 'react';
+import constants from '../../../assets/constants';
+import { useNavigate } from "react-router-dom";
 import './CreateTour.css';
 import apiClient from '../../../services/apiClient'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import { faPlus, faRefresh } from '@fortawesome/free-solid-svg-icons';
-import constants from '../../../assets/constants';
 import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button'
+import DatePicker, { DateObject } from "react-multi-date-picker";
+import TimePicker from "react-multi-date-picker/plugins/time_picker";
+import DatePanel from "react-multi-date-picker/plugins/date_panel";
+import moment from 'moment/moment';
 
 const CreateTour = () => {
+    const navigate = useNavigate();
+
     const [values, updateValue] = useReducer(
         (state, update) => ({ ...state, ...update }),
         {
@@ -31,17 +36,30 @@ const CreateTour = () => {
         }
     );
 
-    const [cities, setCities] = useState(true);
+    const [cities, setCities] = useState([]);
+
+    const [error, setError] = useState({});
 
     useEffect(()=>{
         getCities()
+        const date = new DateObject()
+        date.toDate()
     },[])
 
     const getCities = async () => {
         const cities = await apiClient.get('/cities')
-        console.log('cities',cities)
         setCities(cities)
     }
+
+    const createTour = ()=> {
+        console.log(values,values.fecha.map((item)=>moment(item.toDate()).toISOString()))
+    }
+
+    const goBack = ()=> {
+        navigate(-1)
+    }
+
+
 
     return (
         <Container>
@@ -57,6 +75,7 @@ const CreateTour = () => {
                         value={values.tourName}
                         required
                         type="text"
+                        maxLength={50}
                         />
                         </Col>
                     </Form.Group>
@@ -137,8 +156,28 @@ const CreateTour = () => {
             <Row>
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="fecha">
-                        <Form.Label column>Fechas</Form.Label>
+                        <Form.Label column>
+                            <DatePicker
+                            value={values.fecha}
+                            onChange={(date)=>updateValue({fecha:date})}
+                            format="DD/MM/YYYY HH:mm"
+                            sort
+                            multiple
+                            plugins={[
+                                <TimePicker position="bottom" hideSeconds/>,
+                                <DatePanel markFocused />
+                            ]}
+                            render={
+                                <Button className="new" onClick={createTour}>
+                                    Editar Fechas
+                                </Button>
+                            }
+                            />
+                        </Form.Label>
                         <Col >
+                            {
+                                values.fecha.map((item)=><Row>{item.format('DD/MM/YYYY HH:mm')}</Row>)
+                            }
                         </Col>
                     </Form.Group>
                 </Col>
@@ -157,6 +196,67 @@ const CreateTour = () => {
                         />
                         </Col>
                     </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group as={Row} className="mb-3" controlId="idioma">
+                        <Form.Label column>Idioma</Form.Label>
+                        <Col >
+                            <Form.Select value={values.idioma} onChange={(event) => {
+                                updateValue({ idioma: event.target.value})
+                            }}>
+                                <option value={''}></option>
+                                {constants.IDIOMAS.map((item)=><option value={item}>{item}</option>)}
+                            </Form.Select>
+                        </Col>
+                    </Form.Group>
+                </Col>
+                
+                <Col>
+                    <Form.Group as={Row} className="mb-3" controlId="ciudad">
+                        <Form.Label column>Ciudad</Form.Label>
+                        <Col >
+                            <Form.Select value={values.ciudad} onChange={(event) => {
+                                updateValue({ ciudad: event.target.value})
+                            }}>
+                                <option value={''}></option>
+                                {cities.map((item)=><option value={item.name}>{item.name}</option>)}
+                            </Form.Select>
+                        </Col>
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group as={Row} className="mb-3" controlId="puntoDeEncuentro">
+                        <Form.Label column>Punto de Encuentro</Form.Label>
+                        <Col >
+                        <Form.Control
+                        onChange={(event) => {
+                            updateValue({puntoDeEncuentro: event.target.value})
+                        }}
+                        value={values.puntoDeEncuentro}
+                        required
+                        type="text"
+                        maxLength={200}
+                        />
+                        </Col>
+                    </Form.Group>
+                </Col>
+
+                <Col>
+                </Col>
+            </Row>
+            <Row>
+                <Col></Col>
+                <Col></Col>
+
+                <Col>
+                    <Button className="new" onClick={createTour}>Crear Tour</Button>
+                </Col>
+                <Col>
+                    <Button className="cancel" onClick={goBack}>Cancelar</Button>
                 </Col>
             </Row>
         </Container>

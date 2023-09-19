@@ -4,4 +4,12 @@ module.exports = {
         TOUR_LIST: '/tours',
         NEW_TOUR: '/tours/new',
     },
+    IDIOMAS:[
+        'Español',
+        'Inglés',
+        'Portugués',
+        'Alemán',
+        'Francés',
+        'Italiano'   
+    ]
 }

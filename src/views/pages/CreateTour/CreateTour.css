@@ -1,0 +1,15 @@
+.new{
+    background-color: #4E598C;
+}
+
+.cancel{
+    background-color: #E32929;
+}
+
+input{
+    height: 100%;
+}
+
+.rmdp-container{
+    width: 100% !important;
+}
