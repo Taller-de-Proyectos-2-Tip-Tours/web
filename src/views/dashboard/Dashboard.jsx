@@ -12,7 +12,6 @@ import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems } from './listItems';
 import { Route, Routes } from "react-router-dom";
 import { ParallaxProvider } from 'react-scroll-parallax';
@@ -20,7 +19,8 @@ import DefaultLayout from '../../containers/DefaultLayout/DefaultLayout';
 import Constants from '../../assets/constants';
 import { useNavigate } from "react-router-dom";
 import constants from '../../assets/constants';
-
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-solid-svg-icons'; 
 // pages
 import Home from '../pages/Home/Home';
 import TourList from '../pages/ToursList/ToursList';
@@ -117,12 +117,26 @@ export default function Dashboard() {
               sx={{ flexGrow: 1 }}
             >
               <IconButton
-              edge="start"
               color="inherit"
               aria-label="open drawer"
               onClick={goToHome}
-              ><MenuIcon /></IconButton>
+              >
+                <MenuIcon />
+              </IconButton>
               Tip Tours
+            </Typography>
+            <Typography
+              component="h1"
+              variant="h6"
+              color="inherit"
+            >
+              Usuario
+              <IconButton
+              aria-label="open drawer"
+              style={{backgroundColor:"#FF8C42",marginLeft:8}}
+              >
+                <FontAwesomeIcon style={{color:'#4E598C'}} icon={faUser} />
+              </IconButton>
             </Typography>
           </Toolbar>
         </AppBar>
