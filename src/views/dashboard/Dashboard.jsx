@@ -19,11 +19,12 @@ import DefaultLayout from '../../containers/DefaultLayout/DefaultLayout';
 import Constants from '../../assets/constants';
 import { useNavigate } from "react-router-dom";
 import constants from '../../assets/constants';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons'; 
 // pages
 import Home from '../pages/Home/Home';
 import TourList from '../pages/ToursList/ToursList';
+import CreateTour from '../pages/CreateTour/CreateTour';
 
 function Copyright(props) {
   return (
@@ -164,6 +165,7 @@ export default function Dashboard() {
                 <Routes>
                   <Route path={Constants.ROUTES.HOME} element={<Home />}></Route>
                   <Route path={Constants.ROUTES.TOUR_LIST} element={<TourList />}></Route>
+                  <Route path={Constants.ROUTES.NEW_TOUR} element={<CreateTour />}></Route>
                   <Route path='*' element={<Home />} />
                 </Routes>
               </DefaultLayout>
