@@ -12,6 +12,7 @@ import DatePicker, { DateObject } from "react-multi-date-picker";
 import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import moment from 'moment/moment';
+import Image from 'react-bootstrap/Image';
 
 const CreateTour = () => {
     const navigate = useNavigate();
@@ -58,6 +59,39 @@ const CreateTour = () => {
     const goBack = ()=> {
         navigate(-1)
     }
+
+    const principalImgChange = (file) => {
+        if(file.target.files[0].type==='image/jpeg' ||file.target.files[0].type==='image/png' ) {
+            getBase64(file.target.files[0])
+            .then((result)=>{
+                updateValue({fotoPrincipal:result})
+            })
+        } else {
+
+        }
+    }
+
+    const getBase64 = file => {
+        return new Promise(resolve => {
+          let fileInfo;
+          let baseURL = "";
+          // Make new FileReader
+          let reader = new FileReader();
+    
+          // Convert the file to base64 text
+          reader.readAsDataURL(file);
+    
+          // on reader load somthing...
+          reader.onload = () => {
+            // Make a fileInfo Object
+            console.log("Called", reader);
+            baseURL = reader.result;
+            console.log(baseURL);
+            resolve(baseURL);
+          };
+          console.log(fileInfo);
+        });
+      };
 
 
 
@@ -246,6 +280,20 @@ const CreateTour = () => {
                 </Col>
 
                 <Col>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group controlId="fotoPrincipal" className="mb-3">
+                        <Form.Label>Imagen Principal</Form.Label>
+                        <Col>
+                            <input type='file' accept='image/jpeg, image/png' onChange={principalImgChange}></input>
+                        </Col>
+                    </Form.Group>   
+                </Col>
+                
+                <Col xs={4} md={4}>
+                    {values.fotoPrincipal&&<Image src={values.fotoPrincipal} thumbnail  />}
                 </Col>
             </Row>
             <Row>
