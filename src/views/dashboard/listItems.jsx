@@ -8,12 +8,12 @@ import constants from '../../assets/constants';
 
 export const mainListItems = (
   <React.Fragment>
-    <Link to={constants.ROUTES.HOME}>
+    <Link to={constants.ROUTES.TOUR_LIST} style={{color:"white"}}>
       <ListItemButton>
-        <ListItemIcon>
+        <ListItemIcon style={{color:"white"}}>
           <DashboardIcon />
         </ListItemIcon>
-        <ListItemText primary="Página principal" />
+        <ListItemText primary="Lista de Tours" />
       </ListItemButton>
     </Link>
   </React.Fragment>

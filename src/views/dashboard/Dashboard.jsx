@@ -14,11 +14,16 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems } from './listItems';
-import Home from '../pages/Home/Home';
 import { Route, Routes } from "react-router-dom";
 import { ParallaxProvider } from 'react-scroll-parallax';
 import DefaultLayout from '../../containers/DefaultLayout/DefaultLayout';
 import Constants from '../../assets/constants';
+import { useNavigate } from "react-router-dom";
+import constants from '../../assets/constants';
+
+// pages
+import Home from '../pages/Home/Home';
+import TourList from '../pages/ToursList/ToursList';
 
 function Copyright(props) {
   return (
@@ -45,7 +50,7 @@ const AppBar = styled(MuiAppBar, {
   }),
   ...(open && {
     marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
+    width: `100%`,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -58,6 +63,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     '& .MuiDrawer-paper': {
       position: 'relative',
       whiteSpace: 'nowrap',
+      backgroundColor:'#BCBDBD',
       width: drawerWidth,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
@@ -83,33 +89,26 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const defaultTheme = createTheme();
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
+  const goToHome = () => {
+    navigate(constants.ROUTES.HOME)
+  }
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute" open={open} style={{backgroundColor:'#4E598C'}}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
             }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
             <Typography
               component="h1"
               variant="h6"
@@ -117,25 +116,19 @@ export default function Dashboard() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
+              <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={goToHome}
+              ><MenuIcon /></IconButton>
               Tip Tours
             </Typography>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
           <Divider />
-          <List component="nav">
+          <List component="nav" style={{backgroundColor:'#BCBDBD',marginTop:54}}>
             {mainListItems}
             <Divider sx={{ my: 1 }} />
           </List>
@@ -143,10 +136,7 @@ export default function Dashboard() {
         <Box
           component="main"
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            
             flexGrow: 1,
             height: '100vh',
             overflow: 'auto',
@@ -159,6 +149,7 @@ export default function Dashboard() {
               <DefaultLayout>
                 <Routes>
                   <Route path={Constants.ROUTES.HOME} element={<Home />}></Route>
+                  <Route path={Constants.ROUTES.TOUR_LIST} element={<TourList />}></Route>
                   <Route path='*' element={<Home />} />
                 </Routes>
               </DefaultLayout>
