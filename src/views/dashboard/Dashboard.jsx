@@ -91,10 +91,6 @@ const defaultTheme = createTheme();
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(true);
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
 
   const goToHome = () => {
     navigate(constants.ROUTES.HOME)
@@ -104,7 +100,7 @@ export default function Dashboard() {
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open} style={{backgroundColor:'#4E598C'}}>
+        <AppBar position="absolute" open={true} style={{backgroundColor:'#4E598C'}}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -141,7 +137,7 @@ export default function Dashboard() {
             </Typography>
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
+        <Drawer variant="permanent" open={true}>
           <Divider />
           <List component="nav" style={{backgroundColor:'#BCBDBD',marginTop:54}}>
             {mainListItems}
