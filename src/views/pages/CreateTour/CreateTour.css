@@ -6,6 +6,12 @@
     background-color: #E32929;
 }
 
+.modal-full-page{
+    background-color:rgba(128, 128, 128, 0.521);
+    display: block;
+    padding-top: 12vh;
+}
+
 .error {
     color: #E32929;
     background-color: transparent;

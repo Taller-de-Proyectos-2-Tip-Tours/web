@@ -15,6 +15,7 @@ import moment from 'moment/moment';
 import Image from 'react-bootstrap/Image';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
+import Modal from 'react-bootstrap/Modal';
 
 const CreateTour = () => {
     const navigate = useNavigate();
@@ -61,6 +62,10 @@ const CreateTour = () => {
         }
     );
 
+    const [modal, showModal] = useState(true);
+    const [modalMessage, setModalMessage] = useState('');
+
+
     useEffect(()=>{
         getCities()
         const date = new DateObject()
@@ -91,11 +96,10 @@ const CreateTour = () => {
                 fotosSecundarias:''
             }
         )
-        console.log(values,values.fecha.map((item)=>moment(item.toDate()).toISOString()))
         let invalid = false;
         if(values.tourName==='') {
             invalid = true
-            setError({tourName:'Nombre del Tour es un campo obligatorio'})
+            setError({tourName:'Nombre del Paseo es un campo obligatorio'})
         }
         if(values.duracion==='') {
             invalid = true
@@ -148,7 +152,30 @@ const CreateTour = () => {
         }
 
         if(!invalid){
-
+            const data = {
+                name: values.tourName,
+                duration: values.duracion,
+                description: values.description,
+                minParticipants: values.cupoMinimo,
+                maxParticipants: values.cupoMaximo,
+                city: values.ciudad,
+                considerations: values.description2,
+                lenguage: values.idioma,
+                meetingPoint: values.puntoDeEncuentro,
+                dates: values.fecha.map((item)=>moment(item.toDate()).toISOString()),
+                mainImage: values.fotoPrincipal,
+                otherImages: values.fotosSecundarias
+            }
+            console.log(data)
+            apiClient.post('/tours',data)
+            .then((result)=>{
+                setModalMessage('Se cargó el paseo exitosamente.')
+                showModal(true)
+            })
+            .catch((error)=>{
+                setModalMessage('Hubo un error al cargar el paseo.')
+                showModal(true)
+            })
         }
     }
 
@@ -219,7 +246,7 @@ const CreateTour = () => {
             <Row>
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="tourName">
-                        <Form.Label column className={error.tourName?'error':''}>Nombre del Tour</Form.Label>
+                        <Form.Label column className={error.tourName?'error':''}>Nombre del Paseo</Form.Label>
                         <Col >
                         <Form.Control
                         onChange={(event) => {
@@ -452,12 +479,30 @@ const CreateTour = () => {
                 <Col></Col>
 
                 <Col>
-                    <Button className="new" onClick={createTour}>Crear Tour</Button>
+                    <Button className="new" onClick={createTour}>Crear Paseo</Button>
                 </Col>
                 <Col>
                     <Button className="cancel" onClick={goBack}>Cancelar</Button>
                 </Col>
             </Row>
+            {modal&&<div
+                className="modal show modal-full-page"
+            >
+            <Modal.Dialog>
+                <Modal.Header>
+                    <Modal.Title>Creacion del Paseo</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <p>{modalMessage}</p>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={()=>showModal(false)}>Cerrar</Button>
+                </Modal.Footer>
+            </Modal.Dialog>
+            </div>}
+            
         </Container>
     )
 }

@@ -37,7 +37,7 @@ const TourList = () => {
                 <Col>
                     <Button className='primary-button' onClick={createTour}>
                         <FontAwesomeIcon icon={faPlus} className='button-icon'></FontAwesomeIcon>
-                        Nuevo Tour
+                        Nuevo Paseo
                     </Button>
                 </Col>
                 <Col>
