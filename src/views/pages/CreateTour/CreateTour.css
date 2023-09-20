@@ -6,6 +6,11 @@
     background-color: #E32929;
 }
 
+.error {
+    color: #E32929;
+    background-color: transparent;
+}
+
 input{
     height: 100%;
 }

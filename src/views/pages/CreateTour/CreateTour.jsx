@@ -41,7 +41,25 @@ const CreateTour = () => {
 
     const [cities, setCities] = useState([]);
 
-    const [error, setError] = useState({});
+    const [error, setError] = useReducer(
+        (state, update) => ({ ...state, ...update }),
+        {
+            tourName:'',
+            description:'',
+            description2:'',
+            cupoMinimo:'',
+            cupoMaximo:'',
+            fecha:'',
+            duracion:'',
+            idioma:'',
+            ciudad:'',
+            puntoDeEncuentro:'',
+            puntoDeEncuentroLat:'',
+            puntoDeEncuentroLon:'',
+            fotoPrincipal:'',
+            fotosSecundarias:''
+        }
+    );
 
     useEffect(()=>{
         getCities()
@@ -55,7 +73,83 @@ const CreateTour = () => {
     }
 
     const createTour = ()=> {
+        setError(
+            {
+                tourName:'',
+                description:'',
+                description2:'',
+                cupoMinimo:'',
+                cupoMaximo:'',
+                fecha:'',
+                duracion:'',
+                idioma:'',
+                ciudad:'',
+                puntoDeEncuentro:'',
+                puntoDeEncuentroLat:'',
+                puntoDeEncuentroLon:'',
+                fotoPrincipal:'',
+                fotosSecundarias:''
+            }
+        )
         console.log(values,values.fecha.map((item)=>moment(item.toDate()).toISOString()))
+        let invalid = false;
+        if(values.tourName==='') {
+            invalid = true
+            setError({tourName:'Nombre del Tour es un campo obligatorio'})
+        }
+        if(values.duracion==='') {
+            invalid = true
+            setError({duracion:'Duracion es un campo obligatorio'})
+        }
+
+        if(values.cupoMaximo<=0) {
+            invalid = true
+            setError({cupoMaximo:'El Cupo Maximo tiene que ser mayor a 0'})
+        }
+
+        if(values.cupoMinimo<=0) {
+            invalid = true
+            setError({cupoMinimo:'El Cupo Minimo tiene que ser mayor a 0'})
+        }
+
+        if(values.cupoMaximo<values.cupoMinimo) {
+            invalid = true
+            setError({cupoMaximo:'El Cupo Maximo tiene que ser mayor que el cupo Minimo'})
+            setError({cupoMinimo:'El Cupo Minimo tiene que ser menor que el cupo Maximo'})
+        }
+
+        if(values.ciudad==='') {
+            invalid = true
+            setError({ciudad:'La Ciudad es un campo obligatorio'})
+        }
+
+        if(values.fecha.length===0) {
+            invalid = true
+            setError({fecha:'Tiene que agregar como minimo una fecha'})
+        }
+
+        if(values.fotoPrincipal === '') {
+            invalid = true
+            setError({fotoPrincipal:'Tiene que agregar una foto principal'})
+        }
+
+        if(values.fotosSecundarias.length===0) {
+            invalid = true
+            setError({fotosSecundarias:'Tiene que agregar como minimo una foto secundaria'})
+        }
+
+        if(values.puntoDeEncuentro==='') {
+            invalid = true
+            setError({puntoDeEncuentro:'El punto de encuentro es un campo obligatorio'})
+        }
+        if(values.idioma==='') {
+            invalid = true
+            setError({idioma:'El idioma de encuentro es un campo obligatorio'})
+        }
+
+        if(!invalid){
+
+        }
     }
 
     const goBack = ()=> {
@@ -69,7 +163,7 @@ const CreateTour = () => {
                 updateValue({fotoPrincipal:result})
             })
         } else {
-
+            setError({fotoPrincipal:'El archivo no es image/jpeg o image/png'})
         }
     }
 
@@ -84,10 +178,10 @@ const CreateTour = () => {
                         updateValue({fotosSecundarias:[...values.fotosSecundarias,result]})
                     })
                 } else {
-        
+                    setError({fotosSecundarias:'El archivo no es image/jpeg o image/png'})
             }
         } else {
-
+            setError({fotosSecundarias:'Esta intentando ingresar mas de 4 fotos secundarias'})
         }
     }
 
@@ -125,7 +219,7 @@ const CreateTour = () => {
             <Row>
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="tourName">
-                        <Form.Label column>Nombre del Tour</Form.Label>
+                        <Form.Label column className={error.tourName?'error':''}>Nombre del Tour</Form.Label>
                         <Col >
                         <Form.Control
                         onChange={(event) => {
@@ -137,6 +231,7 @@ const CreateTour = () => {
                         maxLength={50}
                         />
                         </Col>
+                        {error.tourName&&<div className='error'>{error.tourName}</div>}
                     </Form.Group>
                 </Col>
 
@@ -147,7 +242,7 @@ const CreateTour = () => {
             <Row>
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="description">
-                        <Form.Label column>Descripcion</Form.Label>
+                        <Form.Label column className={error.description?'error':''}>Descripcion</Form.Label>
                         <Col >
                         <Form.Control
                         value={values.description}
@@ -158,12 +253,13 @@ const CreateTour = () => {
                             as="textarea"
                         />
                         </Col>
+                        {error.description&&<div className='error'>{error.description}</div>}
                     </Form.Group>
                 </Col>
 
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="description2">
-                        <Form.Label column>Puntos a tener en cuenta</Form.Label>
+                        <Form.Label column className={error.description2?'error':''}>Puntos a tener en cuenta</Form.Label>
                         <Col >
                         <Form.Control
                         value={values.description2}
@@ -174,6 +270,7 @@ const CreateTour = () => {
                             as="textarea"
                         />
                         </Col>
+                        {error.description2&&<div className='error'>{error.description2}</div>}
                     </Form.Group>
                 </Col>
             </Row>
@@ -181,7 +278,7 @@ const CreateTour = () => {
             <Row>
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="cupoMinimo">
-                        <Form.Label column>Cupo Minimo</Form.Label>
+                        <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Minimo</Form.Label>
                         <Col >
                         <Form.Control
                         value={values.cupoMinimo}
@@ -192,12 +289,13 @@ const CreateTour = () => {
                         type="number"
                         />
                         </Col>
+                        {error.cupoMinimo&&<div className='error'>{error.cupoMinimo}</div>}
                     </Form.Group>
                 </Col>
 
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="cupoMaximo">
-                        <Form.Label column>Cupo Maximo</Form.Label>
+                        <Form.Label column className={error.cupoMaximo?'error':''}>Cupo Maximo</Form.Label>
                         <Col >
                         <Form.Control
                         required
@@ -208,6 +306,7 @@ const CreateTour = () => {
                         type="number"
                         />
                         </Col>
+                        {error.cupoMaximo&&<div className='error'>{error.cupoMaximo}</div>}
                     </Form.Group>
                 </Col>
             </Row>
@@ -227,7 +326,7 @@ const CreateTour = () => {
                                 <DatePanel markFocused />
                             ]}
                             render={
-                                <Button className="new" onClick={createTour}>
+                                <Button className={error.fecha?'error':'new'} onClick={createTour}>
                                     Editar Fechas
                                 </Button>
                             }
@@ -238,12 +337,13 @@ const CreateTour = () => {
                                 values.fecha.map((item)=><Row>{item.format('DD/MM/YYYY HH:mm')}</Row>)
                             }
                         </Col>
+                        {error.fecha&&<div className='error'>{error.fecha}</div>}
                     </Form.Group>
                 </Col>
 
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="duracion">
-                        <Form.Label column>Duracion</Form.Label>
+                        <Form.Label column className={error.duracion?'error':''}>Duracion</Form.Label>
                         <Col >
                         <Form.Control
                         required
@@ -254,13 +354,14 @@ const CreateTour = () => {
                         type="time"
                         />
                         </Col>
+                        {error.duracion&&<div className='error'>{error.duracion}</div>}
                     </Form.Group>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="idioma">
-                        <Form.Label column>Idioma</Form.Label>
+                        <Form.Label column className={error.idioma?'error':''}>Idioma</Form.Label>
                         <Col >
                             <Form.Select value={values.idioma} onChange={(event) => {
                                 updateValue({ idioma: event.target.value})
@@ -269,12 +370,13 @@ const CreateTour = () => {
                                 {constants.IDIOMAS.map((item)=><option value={item}>{item}</option>)}
                             </Form.Select>
                         </Col>
+                        {error.idioma&&<div className='error'>{error.idioma}</div>}
                     </Form.Group>
                 </Col>
                 
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="ciudad">
-                        <Form.Label column>Ciudad</Form.Label>
+                        <Form.Label column className={error.ciudad?'error':''}>Ciudad</Form.Label>
                         <Col >
                             <Form.Select value={values.ciudad} onChange={(event) => {
                                 updateValue({ ciudad: event.target.value})
@@ -283,13 +385,14 @@ const CreateTour = () => {
                                 {cities.map((item)=><option value={item.name}>{item.name}</option>)}
                             </Form.Select>
                         </Col>
+                        {error.ciudad&&<div className='error'>{error.ciudad}</div>}
                     </Form.Group>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="puntoDeEncuentro">
-                        <Form.Label column>Punto de Encuentro</Form.Label>
+                        <Form.Label column className={error.puntoDeEncuentro?'error':''}>Punto de Encuentro</Form.Label>
                         <Col >
                         <Form.Control
                         onChange={(event) => {
@@ -301,6 +404,7 @@ const CreateTour = () => {
                         maxLength={200}
                         />
                         </Col>
+                        {error.puntoDeEncuentro&&<div className='error'>{error.puntoDeEncuentro}</div>}
                     </Form.Group>
                 </Col>
 
@@ -310,7 +414,7 @@ const CreateTour = () => {
             <Row>
                 <Col>
                     <Form.Group controlId="fotoPrincipal" className="mb-3">
-                        <Form.Label>Imagen Principal</Form.Label>
+                        <Form.Label className={error.fotoPrincipal?'error':''}>Imagen Principal</Form.Label>
                         <Col>
                             <input type='file' accept='image/jpeg, image/png' onChange={principalImgChange}></input>
                         </Col>
@@ -320,18 +424,18 @@ const CreateTour = () => {
                 <Col xs={4} md={4}>
                     {values.fotoPrincipal&&<Image src={values.fotoPrincipal} thumbnail  />}
                 </Col>
+                {error.fotoPrincipal&&<div className='error'>{error.fotoPrincipal}</div>}
             </Row>
             <Row>
                 <Col>
                     <Form.Group controlId="fotoPrincipal" className="mb-3">
-                        <Form.Label>Fotos Secundarias</Form.Label>
+                        <Form.Label className={error.fotosSecundarias?'error':''}>Fotos Secundarias</Form.Label>
                         <Col>
                             <input type='file' accept='image/jpeg, image/png' onChange={cambioImagenesSecundarias}></input>
                         </Col>
                     </Form.Group>   
                 </Col>
-                
-                
+                {error.fotosSecundarias&&<div className='error'>{error.fotosSecundarias}</div>}
             </Row>
             <Row>
                 {values.fotosSecundarias.map((item,index)=>
