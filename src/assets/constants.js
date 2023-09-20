@@ -1,5 +1,15 @@
 module.exports = {
     ROUTES: {
-        HOME: '',
+        HOME: '/',
+        TOUR_LIST: '/tours',
+        NEW_TOUR: '/tours/new',
     },
+    IDIOMAS:[
+        'Español',
+        'Inglés',
+        'Portugués',
+        'Alemán',
+        'Francés',
+        'Italiano'   
+    ]
 }

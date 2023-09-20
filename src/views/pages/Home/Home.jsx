@@ -13,16 +13,6 @@ const styles = {
 };
 
 const Home = () => {
-    useEffect(()=>{
-        apiClient.get('/tours')
-        .then((result)=>{
-            console.log(result)
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-    },[])
-
     return (
         <Paper style={styles.paperContainer}>
             <div className='section-intro'>
