@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Paper } from '@mui/material';
 import './Home.css';
 import Image from '../../../assets/images/imagen_principal.jpg';
-import apiClient from '../../../services/apiClient'
 
 const styles = {
     paperContainer: {
