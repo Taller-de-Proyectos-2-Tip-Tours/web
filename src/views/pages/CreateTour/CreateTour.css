@@ -13,3 +13,12 @@ input{
 .rmdp-container{
     width: 100% !important;
 }
+
+.delete-img{
+    background-color: transparent;
+    border-color: transparent;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    right: 6px;
+}

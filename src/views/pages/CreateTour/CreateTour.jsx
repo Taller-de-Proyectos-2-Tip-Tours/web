@@ -13,6 +13,8 @@ import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import moment from 'moment/moment';
 import Image from 'react-bootstrap/Image';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import { faX } from '@fortawesome/free-solid-svg-icons';
 
 const CreateTour = () => {
     const navigate = useNavigate();
@@ -71,6 +73,24 @@ const CreateTour = () => {
         }
     }
 
+
+
+    const cambioImagenesSecundarias = (files) => {
+        if(values.fotosSecundarias.length<=4&&values.fotosSecundarias.length+files.target.files.length<=4) {
+            const item = files.target.files[0]
+                if(item.type==='image/jpeg' ||item.type==='image/png' ) {
+                    getBase64(item)
+                    .then((result)=>{
+                        updateValue({fotosSecundarias:[...values.fotosSecundarias,result]})
+                    })
+                } else {
+        
+            }
+        } else {
+
+        }
+    }
+
     const getBase64 = file => {
         return new Promise(resolve => {
           let fileInfo;
@@ -91,7 +111,12 @@ const CreateTour = () => {
           };
           console.log(fileInfo);
         });
-      };
+    };
+
+    const deleteImage = (index) => {
+        const images = values.fotosSecundarias
+        updateValue({fotosSecundarias:images.toSpliced(index,1)})
+    }
 
 
 
@@ -295,6 +320,28 @@ const CreateTour = () => {
                 <Col xs={4} md={4}>
                     {values.fotoPrincipal&&<Image src={values.fotoPrincipal} thumbnail  />}
                 </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group controlId="fotoPrincipal" className="mb-3">
+                        <Form.Label>Fotos Secundarias</Form.Label>
+                        <Col>
+                            <input type='file' accept='image/jpeg, image/png' onChange={cambioImagenesSecundarias}></input>
+                        </Col>
+                    </Form.Group>   
+                </Col>
+                
+                
+            </Row>
+            <Row>
+                {values.fotosSecundarias.map((item,index)=>
+                    <Col xs={2} md={2} style={{position:'relative'}}>
+                        <Button className="delete-img" onClick={()=>deleteImage(index)}>
+                            <FontAwesomeIcon style={{color:'red'}} icon={faX}></FontAwesomeIcon>
+                        </Button>
+                        <Image src={item} thumbnail  />
+                    </Col>
+                )}
             </Row>
             <Row>
                 <Col></Col>
