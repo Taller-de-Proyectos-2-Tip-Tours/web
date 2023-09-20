@@ -62,7 +62,7 @@ const CreateTour = () => {
         }
     );
 
-    const [modal, showModal] = useState(true);
+    const [modal, showModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
 
@@ -106,17 +106,17 @@ const CreateTour = () => {
             setError({duracion:'Duracion es un campo obligatorio'})
         }
 
-        if(values.cupoMaximo<=0) {
+        if(parseInt(values.cupoMaximo)<=0) {
             invalid = true
             setError({cupoMaximo:'El Cupo Maximo tiene que ser mayor a 0'})
         }
 
-        if(values.cupoMinimo<=0) {
+        if(parseInt(values.cupoMinimo)<=0) {
             invalid = true
             setError({cupoMinimo:'El Cupo Minimo tiene que ser mayor a 0'})
         }
 
-        if(values.cupoMaximo<values.cupoMinimo) {
+        if(parseInt(values.cupoMaximo)<parseInt(values.cupoMinimo)) {
             invalid = true
             setError({cupoMaximo:'El Cupo Maximo tiene que ser mayor que el cupo Minimo'})
             setError({cupoMinimo:'El Cupo Minimo tiene que ser menor que el cupo Maximo'})
@@ -353,7 +353,7 @@ const CreateTour = () => {
                                 <DatePanel markFocused />
                             ]}
                             render={
-                                <Button className={error.fecha?'error':'new'} onClick={createTour}>
+                                <Button className={error.fecha?'error':'new'}>
                                     Editar Fechas
                                 </Button>
                             }

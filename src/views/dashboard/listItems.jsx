@@ -13,7 +13,7 @@ export const mainListItems = (
         <ListItemIcon style={{color:"white"}}>
           <DashboardIcon />
         </ListItemIcon>
-        <ListItemText primary="Lista de Tours" />
+        <ListItemText primary="Lista de Paseos" />
       </ListItemButton>
     </Link>
   </React.Fragment>
