@@ -64,8 +64,9 @@ const TourList = () => {
                             </Col>
                             <Col>
                                 <Card.Title>{item?.name}</Card.Title>
-                                <Card.Text>
-                                    {item?.description} {'\n'}{item?.status}
+                                <Card.Text style={{paddingLeft:12}}>
+                                    <Row>{item?.description}</Row>
+                                    <Row>{'Pendiente de Aprobación'}</Row>
                                 </Card.Text>
                                 <Button variant="primary">Ver Detalle</Button>
                             </Col>

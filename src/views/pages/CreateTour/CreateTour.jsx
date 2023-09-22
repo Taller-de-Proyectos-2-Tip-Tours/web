@@ -16,6 +16,7 @@ import Image from 'react-bootstrap/Image';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
+import Map, {Marker} from 'react-map-gl';
 
 const CreateTour = () => {
     const navigate = useNavigate();
@@ -65,16 +66,35 @@ const CreateTour = () => {
     const [modal, showModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
+    const [position, setPosition] = useState(null);
+    const [meetingPlace, setMeetingPlace] = useState(null);
+
+    const [modalRemoveMarker, showModalRemoveMarker] = useState(false);
+
 
     useEffect(()=>{
         getCities()
-        const date = new DateObject()
-        date.toDate()
+        navigator.geolocation.getCurrentPosition(getPositionSuccess, getPositionError);
     },[])
+
+    const getPositionSuccess = (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        setPosition({lat:latitude,lng:longitude})
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    }
+      
+    const getPositionError = () => {
+        console.log("Unable to retrieve your location");
+    }
 
     const getCities = async () => {
         const cities = await apiClient.get('/cities')
         setCities(cities)
+    }
+
+    const setMarker = (event) => {
+        if(!meetingPlace) setMeetingPlace(event.lngLat)
     }
 
     const createTour = ()=> {
@@ -439,6 +459,23 @@ const CreateTour = () => {
                 </Col>
             </Row>
             <Row>
+            {position&&
+                    <Map
+                    mapboxAccessToken={constants.MAP_BOX_KEY}
+                    initialViewState={{
+                        longitude: position.lng,
+                        latitude: position.lat,
+                        zoom: 14
+                    }}
+                    style={{width: 600, height: 400}}
+                    mapStyle="mapbox://styles/mapbox/streets-v9"
+                    onClick={setMarker}
+                    >
+                        {meetingPlace&&<Marker longitude={meetingPlace.lng} latitude={meetingPlace.lat} onClick={()=>showModalRemoveMarker(true)}></Marker>}
+                    </Map>
+            }
+            </Row>
+            <Row>
                 <Col>
                     <Form.Group controlId="fotoPrincipal" className="mb-3">
                         <Form.Label className={error.fotoPrincipal?'error':''}>Imagen Principal</Form.Label>
@@ -499,6 +536,24 @@ const CreateTour = () => {
 
                 <Modal.Footer>
                     <Button variant="secondary" onClick={()=>showModal(false)}>Cerrar</Button>
+                </Modal.Footer>
+            </Modal.Dialog>
+            </div>}
+
+            {modalRemoveMarker&&<div
+                className="modal show modal-full-page"
+            >
+            <Modal.Dialog>
+                <Modal.Header>
+                    <Modal.Title>¿Quitar Marcador?</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Footer>
+                    <Button variant="primary" onClick={()=>{
+                        setMeetingPlace(null)
+                        showModalRemoveMarker(false)
+                    }}>Confirmar</Button>
+                    <Button variant="secondary" onClick={()=>showModalRemoveMarker(false)}>Cerrar</Button>
                 </Modal.Footer>
             </Modal.Dialog>
             </div>}
