@@ -60,7 +60,7 @@ const TourList = () => {
                     <Card.Body>
                         <Row>
                             <Col xs={3} md={3}>
-                                <Image variant="top" src={item?.mainImage} />
+                                <Image variant="top" src={item?.mainImage} style={{maxWidth:'11vw'}} />
                             </Col>
                             <Col>
                                 <Card.Title>{item?.name}</Card.Title>
