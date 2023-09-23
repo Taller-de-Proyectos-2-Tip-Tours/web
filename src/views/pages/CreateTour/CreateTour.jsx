@@ -11,7 +11,6 @@ import Button from 'react-bootstrap/Button'
 import DatePicker from "react-multi-date-picker";
 import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
-import moment from 'moment/moment';
 import Image from 'react-bootstrap/Image';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
@@ -126,6 +125,17 @@ const CreateTour = () => {
             setError({duracion:'Duracion es un campo obligatorio'})
         }
 
+
+        if(values.description==='') {
+            invalid = true
+            setError({description:'La Descripcion es un campo obligatorio'})
+        }
+
+        if(values.description2==='') {
+            invalid = true
+            setError({description2:'Los puntos a tener en cuenta son un campo obligatorio'})
+        }
+
         if(parseInt(values.cupoMaximo)<=0) {
             invalid = true
             setError({cupoMaximo:'El Cupo Maximo tiene que ser mayor a 0'})
@@ -171,6 +181,11 @@ const CreateTour = () => {
             setError({idioma:'El idioma de encuentro es un campo obligatorio'})
         }
 
+        if(!meetingPlace) {
+            invalid = true
+            setError({meetingPlace:'El punto de Inicio es obligatorio'})
+        }
+
         if(!invalid){
             const data = {
                 name: values.tourName,
@@ -182,19 +197,26 @@ const CreateTour = () => {
                 considerations: values.description2,
                 lenguage: values.idioma,
                 meetingPoint: values.puntoDeEncuentro,
-                dates: values.fecha.map((item)=>moment(item.toDate()).toISOString()),
+                dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
                 mainImage: values.fotoPrincipal,
-                otherImages: values.fotosSecundarias
+                otherImages: values.fotosSecundarias,
+                lat:position.lat,
+                lon:position.lng
             }
             console.log(data)
             apiClient.post('/tours',data)
             .then((result)=>{
-                setModalMessage('Se cargó el paseo exitosamente.')
+                setModalMessage(['Se cargó el paseo exitosamente.'])
                 showModal(true)
             })
             .catch((error)=>{
-                setModalMessage('Hubo un error al cargar el paseo.')
+                let errorMsg = []
+                for(const err in error.response.data) {
+                    errorMsg.push(`${err}: ${error.response.data[err].join(' ')}`)
+                }
+                setModalMessage(errorMsg)
                 showModal(true)
+                console.log(error.response.data)
             })
         }
     }
@@ -439,7 +461,7 @@ const CreateTour = () => {
             <Row>
                 <Col>
                     <Form.Group as={Row} className="mb-3" controlId="puntoDeEncuentro">
-                        <Form.Label column className={error.puntoDeEncuentro?'error':''}>Punto de Encuentro</Form.Label>
+                        <Form.Label column className={error.puntoDeEncuentro?'error':''}>Detalles de Encuentro</Form.Label>
                         <Col >
                         <Form.Control
                         onChange={(event) => {
@@ -474,6 +496,9 @@ const CreateTour = () => {
                         {meetingPlace&&<Marker longitude={meetingPlace.lng} latitude={meetingPlace.lat} onClick={()=>showModalRemoveMarker(true)}></Marker>}
                     </Map>
             }
+            </Row>
+            <Row>
+                {error.meetingPlace&&<div className='error'>{error.meetingPlace}</div>}
             </Row>
             <Row>
                 <Col>
@@ -531,7 +556,7 @@ const CreateTour = () => {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <p>{modalMessage}</p>
+                    {modalMessage.map((item)=><p>{item}</p>)}
                 </Modal.Body>
 
                 <Modal.Footer>
