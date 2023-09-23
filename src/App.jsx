@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 //imports
 import { HashRouter } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 // pages
 import Dashboard from './views/dashboard/Dashboard';
