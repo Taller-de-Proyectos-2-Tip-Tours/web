@@ -14,7 +14,7 @@ import Dashboard from './views/dashboard/Dashboard';
 
 function App() {
   useEffect(() => {
-    document.title = "Tip Tours Backoffice"
+    document.title = "Tip Tours"
   }, [])
   return (
     <HashRouter>
