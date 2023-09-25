@@ -200,8 +200,8 @@ const CreateTour = () => {
                 dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
                 mainImage: values.fotoPrincipal,
                 otherImages: values.fotosSecundarias,
-                lat:position.lat,
-                lon:position.lng
+                lat:meetingPlace.lat,
+                lon:meetingPlace.lng
             }
             console.log(data)
             apiClient.post('/tours',data)
