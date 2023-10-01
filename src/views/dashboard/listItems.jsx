@@ -1,20 +1,40 @@
-import * as React from 'react';
+import React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import constants from '../../assets/constants';
+import {logout} from '../../services/googleAuth';
 
-export const mainListItems = (
-  <React.Fragment>
-    <Link to={constants.ROUTES.TOUR_LIST} style={{color:"white"}}>
-      <ListItemButton>
-        <ListItemIcon style={{color:"white"}}>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Lista de Paseos" />
-      </ListItemButton>
-    </Link>
-  </React.Fragment>
-);
+const MainListItems = () => {
+  const navigate = useNavigate();
+  
+  return (
+      <>
+        <Link to={constants.ROUTES.TOUR_LIST} style={{color:"white"}}>
+          <ListItemButton>
+            <ListItemIcon style={{color:"white"}}>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Lista de Paseos" />
+          </ListItemButton>
+        </Link>
+        <div onClick={()=>{
+          logout()
+          navigate(constants.ROUTES.HOME)
+          window.location.reload(false);
+        }}
+        style={{
+          textAlign:'center',
+          color:'white',
+          cursor:'pointer'
+        }}
+        >
+          Log Out
+        </div>
+      </>
+  )
+}
+
+export default MainListItems

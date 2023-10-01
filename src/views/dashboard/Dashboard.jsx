@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
-import { mainListItems } from './listItems';
+import MainListItems from './listItems';
 import { Route, Routes } from "react-router-dom";
 import { ParallaxProvider } from 'react-scroll-parallax';
 import DefaultLayout from '../../containers/DefaultLayout/DefaultLayout';
@@ -25,6 +25,8 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import Home from '../pages/Home/Home';
 import TourList from '../pages/ToursList/ToursList';
 import CreateTour from '../pages/CreateTour/CreateTour';
+import { Button, Image } from 'react-bootstrap';
+import {signInWithGoogle, auth} from '../../services/googleAuth';
 
 function Copyright(props) {
   return (
@@ -92,9 +94,22 @@ const defaultTheme = createTheme();
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  const goToHome = () => {
+  const goToHome = () => {  
     navigate(constants.ROUTES.HOME)
   }
+  const onLogin = () =>{
+    signInWithGoogle().then(()=>{
+      navigate(constants.ROUTES.HOME)
+    })
+  }
+
+  const [user,setUser] = useState(null)
+
+  useEffect(()=>{
+    auth.authStateReady().then(()=>{
+      setUser(auth.currentUser)
+    })
+  },[])
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -122,25 +137,38 @@ export default function Dashboard() {
               </IconButton>
               Tip Tours
             </Typography>
-            <Typography
+            {user!==null&&<Typography
               component="h1"
               variant="h6"
               color="inherit"
             >
-              Usuario
+              {user.displayName}
               <IconButton
               aria-label="open drawer"
-              style={{backgroundColor:"#FF8C42",marginLeft:8}}
+              style={{marginLeft:8}}
               >
-                <FontAwesomeIcon style={{color:'#4E598C'}} icon={faUser} />
+                <Image src={user.photoURL} style={{height:38,borderRadius:100}}></Image>
               </IconButton>
             </Typography>
+            }
+            {
+                user==null&&
+                <Typography
+                component="h1"
+                variant="h6"
+                color="inherit"
+                >
+                  <Button style={{backgroundColor:'transparent',border:'none'}} onClick={onLogin}>
+                    Login
+                  </Button>
+                </Typography>
+            }
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={true}>
           <Divider />
           <List component="nav" style={{backgroundColor:'#BCBDBD',marginTop:54}}>
-            {mainListItems}
+            {user!==null&&<MainListItems/>}
             <Divider sx={{ my: 1 }} />
           </List>
         </Drawer>
