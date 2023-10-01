@@ -6,7 +6,7 @@ import {
   signInWithPopup,
   signOut,
   setPersistence,
-  browserSessionPersistence
+  browserLocalPersistence,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -26,7 +26,7 @@ const googleProvider = new GoogleAuthProvider();
 
 const signInWithGoogle = async () => {
     try {
-        await setPersistence(auth,browserSessionPersistence)
+        await setPersistence(auth,browserLocalPersistence)
         await signInWithPopup(auth, googleProvider);
     } catch (err) {
         console.error(err);
