@@ -100,6 +100,7 @@ export default function Dashboard() {
   const onLogin = () =>{
     signInWithGoogle().then(()=>{
       navigate(constants.ROUTES.HOME)
+      window.location.reload(false);
     })
   }
 
