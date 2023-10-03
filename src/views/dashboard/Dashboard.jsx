@@ -19,8 +19,6 @@ import DefaultLayout from '../../containers/DefaultLayout/DefaultLayout';
 import Constants from '../../assets/constants';
 import { useNavigate } from "react-router-dom";
 import constants from '../../assets/constants';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons'; 
 // pages
 import Home from '../pages/Home/Home';
 import TourList from '../pages/ToursList/ToursList';

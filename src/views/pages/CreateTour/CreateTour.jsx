@@ -16,6 +16,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
+import {auth} from '../../../services/googleAuth';
 
 const CreateTour = () => {
     const navigate = useNavigate();
@@ -66,14 +67,24 @@ const CreateTour = () => {
     const [modalMessage, setModalMessage] = useState('');
 
     const [position, setPosition] = useState(null);
-    const [meetingPlace, setMeetingPlace] = useState(null);
+    const [meetingPlace, setMeetingPlace] = useState([]);
 
     const [modalRemoveMarker, showModalRemoveMarker] = useState(false);
+    const [markerToErase, setMarkerToErase] = useState(null);
+    
+    const [user,setUser] = useState(null)
 
+    useEffect(()=>{
+        if(markerToErase) showModalRemoveMarker(true);
+    },[markerToErase])
 
     useEffect(()=>{
         getCities()
         navigator.geolocation.getCurrentPosition(getPositionSuccess, getPositionError);
+
+        auth.authStateReady().then(()=>{
+            setUser(auth.currentUser)
+        })
     },[])
 
     const getPositionSuccess = (position) => {
@@ -93,7 +104,11 @@ const CreateTour = () => {
     }
 
     const setMarker = (event) => {
-        if(!meetingPlace) setMeetingPlace(event.lngLat)
+        if(!markerToErase) {
+            const markers = [...meetingPlace];
+            markers.push(event.lngLat)
+            setMeetingPlace(markers)
+        }
     }
 
     const createTour = ()=> {
@@ -181,7 +196,7 @@ const CreateTour = () => {
             setError({idioma:'El idioma de encuentro es un campo obligatorio'})
         }
 
-        if(!meetingPlace) {
+        if(meetingPlace.length===0) {
             invalid = true
             setError({meetingPlace:'El punto de Inicio es obligatorio'})
         }
@@ -200,8 +215,17 @@ const CreateTour = () => {
                 dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
                 mainImage: values.fotoPrincipal,
                 otherImages: values.fotosSecundarias,
-                lat:meetingPlace.lat,
-                lon:meetingPlace.lng
+                markers:meetingPlace.map((item)=>{
+                    return {
+                        lat:item.lat,
+                        lon:item.lng,
+                        tag:'',
+                    }
+                }),
+                guide:{
+                    name:user.displayName,
+                    email:user.email,
+                }
             }
             console.log(data)
             apiClient.post('/tours',data)
@@ -493,7 +517,14 @@ const CreateTour = () => {
                     mapStyle="mapbox://styles/mapbox/streets-v9"
                     onClick={setMarker}
                     >
-                        {meetingPlace&&<Marker longitude={meetingPlace.lng} latitude={meetingPlace.lat} onClick={()=>showModalRemoveMarker(true)}></Marker>}
+                        {meetingPlace.map((item,index)=>{
+                            return(
+                                <Marker key={`${item.lng}&${item.lat}`} longitude={item.lng} latitude={item.lat} onClick={()=>{
+                                    setMarkerToErase(index)
+                                }}></Marker>
+                            )
+                        })
+                        }
                     </Map>
             }
             </Row>
@@ -575,10 +606,14 @@ const CreateTour = () => {
 
                 <Modal.Footer>
                     <Button variant="primary" onClick={()=>{
-                        setMeetingPlace(null)
+                        setMeetingPlace(meetingPlace.toSpliced(markerToErase,1))
                         showModalRemoveMarker(false)
+                        setMarkerToErase(null);
                     }}>Confirmar</Button>
-                    <Button variant="secondary" onClick={()=>showModalRemoveMarker(false)}>Cerrar</Button>
+                    <Button variant="secondary" onClick={()=>{
+                        setMarkerToErase(null);
+                        showModalRemoveMarker(false)
+                    }}>Cerrar</Button>
                 </Modal.Footer>
             </Modal.Dialog>
             </div>}
