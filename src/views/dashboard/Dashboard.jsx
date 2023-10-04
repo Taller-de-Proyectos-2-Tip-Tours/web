@@ -25,6 +25,7 @@ import TourList from '../pages/ToursList/ToursList';
 import CreateTour from '../pages/CreateTour/CreateTour';
 import { Button, Image } from 'react-bootstrap';
 import {signInWithGoogle, auth} from '../../services/googleAuth';
+import EditTour from '../pages/EditarTour/EditTour';
 
 function Copyright(props) {
   return (
@@ -188,6 +189,7 @@ export default function Dashboard() {
                 <Routes>
                   <Route path={Constants.ROUTES.HOME} element={<Home />}></Route>
                   <Route path={Constants.ROUTES.TOUR_LIST} element={<TourList />}></Route>
+                  <Route path={Constants.ROUTES.EDIT_LIST} element={<EditTour />}></Route>
                   <Route path={Constants.ROUTES.NEW_TOUR} element={<CreateTour />}></Route>
                   <Route path='*' element={<Home />} />
                 </Routes>

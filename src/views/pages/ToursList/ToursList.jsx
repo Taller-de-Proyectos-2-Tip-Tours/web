@@ -37,6 +37,11 @@ const TourList = () => {
         navigate(constants.ROUTES.NEW_TOUR)
     }
 
+    const editTour = (id) =>{
+        console.log('editTour',id)
+        navigate(constants.ROUTES.TOUR_LIST+'/'+id)
+    }
+
     return (
         <Container>
             <Row style={{ marginBottom:12 }}>
@@ -68,7 +73,7 @@ const TourList = () => {
                                     <Row>{item?.description}</Row>
                                     <Row>{'Pendiente de Aprobación'}</Row>
                                 </Card.Text>
-                                <Button variant="primary">Ver Detalle</Button>
+                                <Button variant="primary" onClick={()=>editTour(item._id.$oid)}>Ver Detalle</Button>
                             </Col>
                         </Row>
                     </Card.Body>

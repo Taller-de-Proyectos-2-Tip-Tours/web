@@ -1,7 +1,8 @@
 import React, { useEffect,useReducer,useState } from 'react';
 import constants from '../../../assets/constants';
 import { useNavigate } from "react-router-dom";
-import './CreateTour.css';
+import { useParams } from "react-router-dom";
+import './EditTour.css';
 import apiClient from '../../../services/apiClient'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -19,9 +20,9 @@ import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
 
-const CreateTour = () => {
+const EditTour = () => {
     const navigate = useNavigate();
-
+    const { id } = useParams();
     const [values, updateValue] = useReducer(
         (state, update) => ({ ...state, ...update }),
         {
@@ -77,6 +78,7 @@ const CreateTour = () => {
 
     useEffect(()=>{
         if(markerToErase) showModalRemoveMarker(true);
+        setModalMessage('')
     },[markerToErase])
 
     useEffect(()=>{
@@ -86,6 +88,7 @@ const CreateTour = () => {
         auth.authStateReady().then(()=>{
             setUser(auth.currentUser)
         })
+        
     },[])
 
     const getPositionSuccess = (position) => {
@@ -204,7 +207,6 @@ const CreateTour = () => {
 
         if(!invalid){
             const data = {
-                name: values.tourName,
                 duration: values.duracion,
                 description: values.description,
                 minParticipants: values.cupoMinimo,
@@ -229,20 +231,6 @@ const CreateTour = () => {
                 }
             }
             console.log(data)
-            apiClient.post('/tours',data)
-            .then((result)=>{
-                setModalMessage(['Se cargó el paseo exitosamente.'])
-                showModal(true)
-            })
-            .catch((error)=>{
-                let errorMsg = []
-                for(const err in error.response.data) {
-                    errorMsg.push(`${err}: ${error.response.data[err].join(' ')}`)
-                }
-                setModalMessage(errorMsg)
-                showModal(true)
-                console.log(error.response.data)
-            })
         }
     }
 
@@ -311,31 +299,8 @@ const CreateTour = () => {
     return (
         <Container>
             <Card>
-                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>Creacion de Paseo</Card.Title>
+                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>{values.tourName}</Card.Title>
                 <Card.Body>
-                <Row>
-                    <Col>
-                        <Form.Group as={Row} className="mb-3" controlId="tourName">
-                            <Form.Label column className={error.tourName?'error':''}>Nombre del Paseo</Form.Label>
-                            <Col >
-                            <Form.Control
-                            onChange={(event) => {
-                                updateValue({tourName: event.target.value})
-                            }}
-                            value={values.tourName}
-                            required
-                            type="text"
-                            maxLength={50}
-                            />
-                            </Col>
-                            {error.tourName&&<div className='error'>{error.tourName}</div>}
-                        </Form.Group>
-                    </Col>
-
-                    <Col>
-                    </Col>
-                </Row>
-
                 <Row>
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="description">
@@ -630,4 +595,4 @@ const CreateTour = () => {
 }
 
 
-export default CreateTour;
+export default EditTour;
