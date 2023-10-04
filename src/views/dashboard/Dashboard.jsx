@@ -127,13 +127,13 @@ export default function Dashboard() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              <IconButton
+              {user!==null&&<IconButton
               color="inherit"
               aria-label="open drawer"
               onClick={goToHome}
               >
                 <MenuIcon />
-              </IconButton>
+              </IconButton>}
               Tip Tours
             </Typography>
             {user!==null&&<Typography
@@ -164,13 +164,13 @@ export default function Dashboard() {
             }
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={true}>
+        {user!==null&&<Drawer variant="permanent" open={true}>
           <Divider />
           <List component="nav" style={{backgroundColor:'#BCBDBD',marginTop:54}}>
-            {user!==null&&<MainListItems/>}
+            <MainListItems/>
             <Divider sx={{ my: 1 }} />
           </List>
-        </Drawer>
+        </Drawer>}
         <Box
           component="main"
           sx={{
