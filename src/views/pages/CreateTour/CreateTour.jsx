@@ -18,6 +18,7 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
+import { Chips } from 'primereact/chips';
 
 const CreateTour = () => {
     const navigate = useNavigate();
@@ -142,12 +143,12 @@ const CreateTour = () => {
         }
 
 
-        if(values.description==='') {
+        if(values.description.length===0) {
             invalid = true
             setError({description:'La Descripcion es un campo obligatorio'})
         }
 
-        if(values.description2==='') {
+        if(values.description2.length===0) {
             invalid = true
             setError({description2:'Los puntos a tener en cuenta son un campo obligatorio'})
         }
@@ -206,11 +207,11 @@ const CreateTour = () => {
             const data = {
                 name: values.tourName,
                 duration: values.duracion,
-                description: values.description,
+                description: values.description.join(','),
                 minParticipants: values.cupoMinimo,
                 maxParticipants: values.cupoMaximo,
                 city: values.ciudad,
-                considerations: values.description2,
+                considerations: values.description2.join(','),
                 lenguage: values.idioma,
                 meetingPoint: values.puntoDeEncuentro,
                 dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
@@ -341,14 +342,7 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="description">
                             <Form.Label column className={error.description?'error':''}>Descripcion</Form.Label>
                             <Col >
-                            <Form.Control
-                            value={values.description}
-                            maxLength={200}
-                            onChange={(event) => {
-                                updateValue({description: event.target.value})
-                            }}
-                                as="textarea"
-                            />
+                                <Chips value={values.description} onChange={(e) => updateValue({description:e.value})}></Chips>
                             </Col>
                             {error.description&&<div className='error'>{error.description}</div>}
                         </Form.Group>
@@ -358,14 +352,7 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="description2">
                             <Form.Label column className={error.description2?'error':''}>Puntos a tener en cuenta</Form.Label>
                             <Col >
-                            <Form.Control
-                            value={values.description2}
-                            maxLength={200}
-                            onChange={(event) => {
-                                updateValue({description2: event.target.value})
-                            }}
-                                as="textarea"
-                            />
+                                <Chips value={values.description2} onChange={(e) => updateValue({description2:e.value})}></Chips>
                             </Col>
                             {error.description2&&<div className='error'>{error.description2}</div>}
                         </Form.Group>
@@ -377,14 +364,7 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="cupoMinimo">
                             <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Minimo</Form.Label>
                             <Col >
-                            <Form.Control
-                            value={values.cupoMinimo}
-                            required
-                            onChange={(event) => {
-                                updateValue({cupoMinimo: event.target.value})
-                            }}
-                            type="number"
-                            />
+                                <Chips value={values.description2} onChange={(e) => updateValue({description2:e.value})}></Chips>
                             </Col>
                             {error.cupoMinimo&&<div className='error'>{error.cupoMinimo}</div>}
                         </Form.Group>

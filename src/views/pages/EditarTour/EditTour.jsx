@@ -19,6 +19,7 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
+import { Chips } from 'primereact/chips';
 
 const EditTour = () => {
     const navigate = useNavigate();
@@ -145,12 +146,12 @@ const EditTour = () => {
         }
 
 
-        if(values.description==='') {
+        if(values.description.length===0) {
             invalid = true
             setError({description:'La Descripcion es un campo obligatorio'})
         }
 
-        if(values.description2==='') {
+        if(values.description2.length===0) {
             invalid = true
             setError({description2:'Los puntos a tener en cuenta son un campo obligatorio'})
         }
@@ -306,14 +307,7 @@ const EditTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="description">
                             <Form.Label column className={error.description?'error':''}>Descripcion</Form.Label>
                             <Col >
-                            <Form.Control
-                            value={values.description}
-                            maxLength={200}
-                            onChange={(event) => {
-                                updateValue({description: event.target.value})
-                            }}
-                                as="textarea"
-                            />
+                                <Chips value={values.description} onChange={(e) => updateValue({description:e.value})}></Chips>
                             </Col>
                             {error.description&&<div className='error'>{error.description}</div>}
                         </Form.Group>
