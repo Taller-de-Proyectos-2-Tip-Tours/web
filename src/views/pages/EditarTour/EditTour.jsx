@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect,useReducer,useState } from 'react';
 import constants from '../../../assets/constants';
 import { useNavigate } from "react-router-dom";
@@ -10,7 +11,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import DatePicker from "react-multi-date-picker";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import Image from 'react-bootstrap/Image';
@@ -69,7 +70,6 @@ const EditTour = () => {
     const [modal, showModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
-    const [position, setPosition] = useState(null);
     const [meetingPlace, setMeetingPlace] = useState([]);
 
     const [modalRemoveMarker, showModalRemoveMarker] = useState(false);
@@ -92,10 +92,47 @@ const EditTour = () => {
         
     },[])
 
+    useEffect(()=>{
+        if(user&&id) searchTours()
+    },[user,id])
+
+    const searchTours = () => {
+        apiClient.get(`/tours?guideEmail=${user.email}`)
+        .then((result)=>{
+            console.log(id,result.filter((item)=>item._id.$oid===id))
+            const tours = result.filter((item)=>item._id.$oid===id)
+            if(tours&&tours.length>0) {
+                const tour = tours[0];
+                updateValue({
+                    tourName:tour.name,
+                    description:tour.description,
+                    description2:tour.considerations,
+                    cupoMinimo:tour.minParticipants,
+                    cupoMaximo:tour.maxParticipants,
+                    fecha:tour.dates.map((item)=>{
+                        return {
+                            date: new DateObject(item.date),
+                            people:item.people,
+                            state:item.state
+                        }
+                    }),
+                    duracion:tour.duration,
+                    idioma:tour.language,
+                    ciudad:tour.city,
+                    puntoDeEncuentro:tour.meetingPoint,
+                    fotoPrincipal:tour.mainImage,
+                    fotosSecundarias:tour.otherImages
+                })
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+    }
+
     const getPositionSuccess = (position) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        setPosition({lat:latitude,lng:longitude})
         console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
     }
       
@@ -250,6 +287,10 @@ const EditTour = () => {
         }
     }
 
+    const cancelarReserva = () => {
+
+    }
+
 
 
     const cambioImagenesSecundarias = (files) => {
@@ -307,7 +348,14 @@ const EditTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="description">
                             <Form.Label column className={error.description?'error':''}>Descripcion</Form.Label>
                             <Col >
-                                <Chips value={values.description} onChange={(e) => updateValue({description:e.value})}></Chips>
+                            <Form.Control
+                            value={values.description}
+                            maxLength={200}
+                            onChange={(event) => {
+                                updateValue({description: event.target.value})
+                            }}
+                                as="textarea"
+                            />
                             </Col>
                             {error.description&&<div className='error'>{error.description}</div>}
                         </Form.Group>
@@ -372,8 +420,8 @@ const EditTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="fecha">
                             <Form.Label column>
                                 <DatePicker
-                                value={values.fecha}
-                                onChange={(date)=>updateValue({fecha:date})}
+                                value={values.fecha.map((item)=>item.date)}
+                                onChange={(date)=>updateValue({fecha:{date:date}})}
                                 format="DD/MM/YYYY HH:mm"
                                 sort
                                 multiple
@@ -390,7 +438,10 @@ const EditTour = () => {
                             </Form.Label>
                             <Col >
                                 {
-                                    values.fecha.map((item)=><Row>{item.format('DD/MM/YYYY HH:mm')}</Row>)
+                                    values.fecha.map((item)=>
+                                    <Row>
+                                        {item.date.format('DD/MM/YYYY HH:mm')} {item?.state==='abierto'&&<Button onClick={cancelarReserva} style={{backgroundColor:'#C11313'}}>{item?.people}/{values.cupoMaximo} Cancelar Reserva</Button>}
+                                    </Row>)
                                 }
                             </Col>
                             {error.fecha&&<div className='error'>{error.fecha}</div>}
@@ -468,7 +519,7 @@ const EditTour = () => {
                     </Col>
                 </Row>
                 <Row>
-                {position&&
+                {/* {position&&
                         <Map
                         mapboxAccessToken={constants.MAP_BOX_KEY}
                         initialViewState={{
@@ -489,7 +540,7 @@ const EditTour = () => {
                             })
                             }
                         </Map>
-                }
+                } */}
                 </Row>
                 <Row>
                     {error.meetingPlace&&<div className='error'>{error.meetingPlace}</div>}
@@ -535,7 +586,7 @@ const EditTour = () => {
                     <Col></Col>
 
                     <Col>
-                        <Button className="new" onClick={createTour}>Crear Paseo</Button>
+                        <Button className="new" onClick={createTour}>Editar Paseo</Button>
                     </Col>
                     <Col>
                         <Button className="cancel" onClick={goBack}>Cancelar</Button>
@@ -549,7 +600,7 @@ const EditTour = () => {
             >
             <Modal.Dialog>
                 <Modal.Header>
-                    <Modal.Title>Creacion del Paseo</Modal.Title>
+                    <Modal.Title>Edicion del Paseo</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>

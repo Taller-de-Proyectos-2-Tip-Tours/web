@@ -27,8 +27,8 @@ const CreateTour = () => {
         (state, update) => ({ ...state, ...update }),
         {
             tourName:'',
-            description:'',
-            description2:'',
+            description:[],
+            description2:[],
             cupoMinimo:0,
             cupoMaximo:0,
             fecha:[],
@@ -207,11 +207,11 @@ const CreateTour = () => {
             const data = {
                 name: values.tourName,
                 duration: values.duracion,
-                description: values.description.join(','),
+                description: values.description,
                 minParticipants: values.cupoMinimo,
                 maxParticipants: values.cupoMaximo,
                 city: values.ciudad,
-                considerations: values.description2.join(','),
+                considerations: values.description2,
                 lenguage: values.idioma,
                 meetingPoint: values.puntoDeEncuentro,
                 dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
@@ -342,7 +342,14 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="description">
                             <Form.Label column className={error.description?'error':''}>Descripcion</Form.Label>
                             <Col >
-                                <Chips value={values.description} onChange={(e) => updateValue({description:e.value})}></Chips>
+                            <Form.Control
+                            value={values.description}
+                            maxLength={200}
+                            onChange={(event) => {
+                                updateValue({description: event.target.value})
+                            }}
+                                as="textarea"
+                            />
                             </Col>
                             {error.description&&<div className='error'>{error.description}</div>}
                         </Form.Group>
@@ -352,7 +359,14 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="description2">
                             <Form.Label column className={error.description2?'error':''}>Puntos a tener en cuenta</Form.Label>
                             <Col >
-                                <Chips value={values.description2} onChange={(e) => updateValue({description2:e.value})}></Chips>
+                            <Form.Control
+                            value={values.description2}
+                            maxLength={200}
+                            onChange={(event) => {
+                                updateValue({description2: event.target.value})
+                            }}
+                                as="textarea"
+                            />
                             </Col>
                             {error.description2&&<div className='error'>{error.description2}</div>}
                         </Form.Group>

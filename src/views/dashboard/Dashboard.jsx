@@ -182,7 +182,7 @@ export default function Dashboard() {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Container sx={{ mt: 4, mb: 4 }}>
 
             <ParallaxProvider>
               <DefaultLayout>

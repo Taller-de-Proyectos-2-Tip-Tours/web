@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect,useState } from 'react';
 import './ToursList.css';
 import apiClient from '../../../services/apiClient'
@@ -11,19 +12,26 @@ import { useNavigate } from "react-router-dom";
 import constants from '../../../assets/constants';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
+import {auth} from '../../../services/googleAuth';
 
 const TourList = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const [tours, setTours] = useState(null);
-
+    const [tours, setTours] = useState(null);
+    const [user,setUser] = useState(null)
 
     useEffect(()=>{
-        searchTours()
+        auth.authStateReady().then(()=>{
+        setUser(auth.currentUser)
+        })
     },[])
 
+    useEffect(()=>{
+        if(user) searchTours()
+    },[user])
+
     const searchTours = () => {
-        apiClient.get('/tours')
+        apiClient.get(`/tours?guideEmail=${user.email}`)
         .then((result)=>{
             console.log(result)
             setTours(result)
