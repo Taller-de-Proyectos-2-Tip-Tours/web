@@ -110,7 +110,12 @@ const CreateTour = () => {
     const setMarker = (event) => {
         if(!markerToErase) {
             const markers = [...meetingPlace];
-            markers.push(event.lngLat)
+            const data = {
+                lat:event.lngLat.lat,
+                lng:event.lngLat.lng,
+                tag:''
+            }
+            markers.push(data)
             setMeetingPlace(markers)
         }
     }
@@ -204,6 +209,7 @@ const CreateTour = () => {
             invalid = true
             setError({meetingPlace:'El punto de Inicio es obligatorio'})
         }
+        console.log(meetingPlace)
 
         if(!invalid){
             const data = {
@@ -219,11 +225,11 @@ const CreateTour = () => {
                 dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
                 mainImage: values.fotoPrincipal,
                 otherImages: values.fotosSecundarias,
-                markers:meetingPlace.map((item)=>{
+                stops:meetingPlace.map((item,index)=>{
                     return {
                         lat:item.lat,
                         lon:item.lng,
-                        tag:'',
+                        tag:index===0?'Inicio':index===meetingPlace.length?'Fin':'Punto Intermedio',
                     }
                 }),
                 guide:{
@@ -609,7 +615,16 @@ const CreateTour = () => {
                 <Modal.Header>
                     <Modal.Title>¿Quitar Marcador?</Modal.Title>
                 </Modal.Header>
-
+                {/* <Modal.Body>
+                    <Form.Control
+                    value={values.description}
+                    maxLength={100}
+                    placeholder='Descipción'
+                    onChange={(event) => {
+                    }}
+                        as="textarea"
+                    />
+                </Modal.Body> */}
                 <Modal.Footer>
                     <Button variant="primary" onClick={()=>{
                         setMeetingPlace(meetingPlace.toSpliced(markerToErase,1))
