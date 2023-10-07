@@ -19,9 +19,11 @@ import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
 import { Chips } from 'primereact/chips';
+import Loader from '../../utils/Loader/Loader'
 
 const CreateTour = () => {
     const navigate = useNavigate();
+    const [loading,setLoading] = useState(false)
 
     const [values, updateValue] = useReducer(
         (state, update) => ({ ...state, ...update }),
@@ -230,10 +232,12 @@ const CreateTour = () => {
                 }
             }
             console.log(data)
+            setLoading(true)
             apiClient.post('/tours',data)
             .then((result)=>{
                 setModalMessage(['Se cargó el paseo exitosamente.'])
                 showModal(true)
+                setLoading(false)
             })
             .catch((error)=>{
                 let errorMsg = []
@@ -242,6 +246,7 @@ const CreateTour = () => {
                 }
                 setModalMessage(errorMsg)
                 showModal(true)
+                setLoading(false)
                 console.log(error.response.data)
             })
         }
@@ -618,6 +623,7 @@ const CreateTour = () => {
                 </Modal.Footer>
             </Modal.Dialog>
             </div>}
+        {loading&&<Loader></Loader>}
             
         </Container>
     )

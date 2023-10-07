@@ -13,12 +13,13 @@ import constants from '../../../assets/constants';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
 import {auth} from '../../../services/googleAuth';
-
+import Loader from '../../utils/Loader/Loader'
 const TourList = () => {
     const navigate = useNavigate();
 
     const [tours, setTours] = useState(null);
     const [user,setUser] = useState(null)
+    const [loading,setLoading] = useState(false)
 
     useEffect(()=>{
         auth.authStateReady().then(()=>{
@@ -31,13 +32,16 @@ const TourList = () => {
     },[user])
 
     const searchTours = () => {
+        setLoading(true);
         apiClient.get(`/tours?guideEmail=${user.email}`)
         .then((result)=>{
             console.log(result)
             setTours(result)
+            setLoading(false);
         })
         .catch(function (error) {
             console.log(error);
+            setLoading(false);
         })
     }
 
@@ -88,6 +92,7 @@ const TourList = () => {
                 </Card>
                 )
             }
+        {loading&&<Loader></Loader>}
         </Container>
     )
 }

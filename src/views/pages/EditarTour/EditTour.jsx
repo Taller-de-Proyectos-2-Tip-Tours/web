@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect,useReducer,useState } from 'react';
 import constants from '../../../assets/constants';
@@ -21,6 +22,7 @@ import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
 import { Chips } from 'primereact/chips';
+import Loader from '../../utils/Loader/Loader'
 
 const EditTour = () => {
     const navigate = useNavigate();
@@ -46,6 +48,7 @@ const EditTour = () => {
     );
 
     const [cities, setCities] = useState([]);
+    const [loading,setLoading] = useState(false)
 
     const [error, setError] = useReducer(
         (state, update) => ({ ...state, ...update }),
@@ -97,8 +100,10 @@ const EditTour = () => {
     },[user,id])
 
     const searchTours = () => {
+        setLoading(true)
         apiClient.get(`/tours?guideEmail=${user.email}`)
         .then((result)=>{
+            setLoading(false)
             console.log(id,result.filter((item)=>item._id.$oid===id))
             const tours = result.filter((item)=>item._id.$oid===id)
             if(tours&&tours.length>0) {
@@ -127,6 +132,7 @@ const EditTour = () => {
         })
         .catch(function (error) {
             console.log(error);
+            setLoading(false)
         })
     }
 
@@ -153,7 +159,7 @@ const EditTour = () => {
         }
     }
 
-    const createTour = ()=> {
+    const editTour = ()=> {
         setError(
             {
                 tourName:'',
@@ -287,8 +293,19 @@ const EditTour = () => {
         }
     }
 
-    const cancelarReserva = () => {
-
+    const cancelarReserva = (date) => {
+        setLoading(true)
+        apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm:ss')}`)
+        .then((result)=>{
+            console.log(result)
+            searchTours()
+            setModalMessage(['La fecha fue cancelada con éxito.'])
+            showModal(true)
+            setLoading(false)
+        }).catch((err)=>{
+            setLoading(false)
+            console.log(err)
+        })
     }
 
 
@@ -440,7 +457,7 @@ const EditTour = () => {
                                 {
                                     values.fecha.map((item)=>
                                     <Row>
-                                        {item.date.format('DD/MM/YYYY HH:mm')} {item?.state==='abierto'&&<Button onClick={cancelarReserva} style={{backgroundColor:'#C11313'}}>{item?.people}/{values.cupoMaximo} Cancelar Reserva</Button>}
+                                        {item.date.format('DD/MM/YYYY HH:mm')} {item?.state==='abierto'&&<Button onClick={()=>cancelarReserva(item.date)} style={{backgroundColor:'#C11313'}}>{item?.people}/{values.cupoMaximo} Cancelar Reserva</Button>}
                                     </Row>)
                                 }
                             </Col>
@@ -586,7 +603,7 @@ const EditTour = () => {
                     <Col></Col>
 
                     <Col>
-                        <Button className="new" onClick={createTour}>Editar Paseo</Button>
+                        <Button className="new" onClick={editTour}>Editar Paseo</Button>
                     </Col>
                     <Col>
                         <Button className="cancel" onClick={goBack}>Cancelar</Button>
@@ -634,7 +651,7 @@ const EditTour = () => {
                 </Modal.Footer>
             </Modal.Dialog>
             </div>}
-            
+        {loading&&<Loader></Loader>}
         </Container>
     )
 }
