@@ -1,7 +1,10 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect,useReducer,useState } from 'react';
 import constants from '../../../assets/constants';
 import { useNavigate } from "react-router-dom";
-import './CreateTour.css';
+import { useParams } from "react-router-dom";
+import './EditTour.css';
 import apiClient from '../../../services/apiClient'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -9,7 +12,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import DatePicker from "react-multi-date-picker";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import Image from 'react-bootstrap/Image';
@@ -21,16 +24,15 @@ import {auth} from '../../../services/googleAuth';
 import { Chips } from 'primereact/chips';
 import Loader from '../../utils/Loader/Loader'
 
-const CreateTour = () => {
+const EditTour = () => {
     const navigate = useNavigate();
-    const [loading,setLoading] = useState(false)
-
+    const { id } = useParams();
     const [values, updateValue] = useReducer(
         (state, update) => ({ ...state, ...update }),
         {
             tourName:'',
-            description:[],
-            description2:[],
+            description:'',
+            description2:'',
             cupoMinimo:0,
             cupoMaximo:0,
             fecha:[],
@@ -46,6 +48,7 @@ const CreateTour = () => {
     );
 
     const [cities, setCities] = useState([]);
+    const [loading,setLoading] = useState(false)
 
     const [error, setError] = useReducer(
         (state, update) => ({ ...state, ...update }),
@@ -70,7 +73,6 @@ const CreateTour = () => {
     const [modal, showModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
-    const [position, setPosition] = useState(null);
     const [meetingPlace, setMeetingPlace] = useState([]);
 
     const [modalRemoveMarker, showModalRemoveMarker] = useState(false);
@@ -80,6 +82,7 @@ const CreateTour = () => {
 
     useEffect(()=>{
         if(markerToErase) showModalRemoveMarker(true);
+        setModalMessage('')
     },[markerToErase])
 
     useEffect(()=>{
@@ -89,12 +92,53 @@ const CreateTour = () => {
         auth.authStateReady().then(()=>{
             setUser(auth.currentUser)
         })
+        
     },[])
+
+    useEffect(()=>{
+        if(user&&id) searchTours()
+    },[user,id])
+
+    const searchTours = () => {
+        setLoading(true)
+        apiClient.get(`/tours?guideEmail=${user.email}`)
+        .then((result)=>{
+            setLoading(false)
+            console.log(id,result.filter((item)=>item._id.$oid===id))
+            const tours = result.filter((item)=>item._id.$oid===id)
+            if(tours&&tours.length>0) {
+                const tour = tours[0];
+                updateValue({
+                    tourName:tour.name,
+                    description:tour.description,
+                    description2:tour.considerations,
+                    cupoMinimo:tour.minParticipants,
+                    cupoMaximo:tour.maxParticipants,
+                    fecha:tour.dates.map((item)=>{
+                        return {
+                            date: new DateObject(item.date),
+                            people:item.people,
+                            state:item.state
+                        }
+                    }),
+                    duracion:tour.duration,
+                    idioma:tour.language,
+                    ciudad:tour.city,
+                    puntoDeEncuentro:tour.meetingPoint,
+                    fotoPrincipal:tour.mainImage,
+                    fotosSecundarias:tour.otherImages
+                })
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+            setLoading(false)
+        })
+    }
 
     const getPositionSuccess = (position) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        setPosition({lat:latitude,lng:longitude})
         console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
     }
       
@@ -115,7 +159,7 @@ const CreateTour = () => {
         }
     }
 
-    const createTour = ()=> {
+    const editTour = ()=> {
         setError(
             {
                 tourName:'',
@@ -207,7 +251,6 @@ const CreateTour = () => {
 
         if(!invalid){
             const data = {
-                name: values.tourName,
                 duration: values.duracion,
                 description: values.description,
                 minParticipants: values.cupoMinimo,
@@ -232,23 +275,6 @@ const CreateTour = () => {
                 }
             }
             console.log(data)
-            setLoading(true)
-            apiClient.post('/tours',data)
-            .then((result)=>{
-                setModalMessage(['Se cargó el paseo exitosamente.'])
-                showModal(true)
-                setLoading(false)
-            })
-            .catch((error)=>{
-                let errorMsg = []
-                for(const err in error.response.data) {
-                    errorMsg.push(`${err}: ${error.response.data[err].join(' ')}`)
-                }
-                setModalMessage(errorMsg)
-                showModal(true)
-                setLoading(false)
-                console.log(error.response.data)
-            })
         }
     }
 
@@ -265,6 +291,21 @@ const CreateTour = () => {
         } else {
             setError({fotoPrincipal:'El archivo no es image/jpeg o image/png'})
         }
+    }
+
+    const cancelarReserva = (date) => {
+        setLoading(true)
+        apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm:ss')}`)
+        .then((result)=>{
+            console.log(result)
+            searchTours()
+            setModalMessage(['La fecha fue cancelada con éxito.'])
+            showModal(true)
+            setLoading(false)
+        }).catch((err)=>{
+            setLoading(false)
+            console.log(err)
+        })
     }
 
 
@@ -317,31 +358,8 @@ const CreateTour = () => {
     return (
         <Container>
             <Card>
-                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>Creacion de Paseo</Card.Title>
+                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>{values.tourName}</Card.Title>
                 <Card.Body>
-                <Row>
-                    <Col>
-                        <Form.Group as={Row} className="mb-3" controlId="tourName">
-                            <Form.Label column className={error.tourName?'error':''}>Nombre del Paseo</Form.Label>
-                            <Col >
-                            <Form.Control
-                            onChange={(event) => {
-                                updateValue({tourName: event.target.value})
-                            }}
-                            value={values.tourName}
-                            required
-                            type="text"
-                            maxLength={50}
-                            />
-                            </Col>
-                            {error.tourName&&<div className='error'>{error.tourName}</div>}
-                        </Form.Group>
-                    </Col>
-
-                    <Col>
-                    </Col>
-                </Row>
-
                 <Row>
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="description">
@@ -383,7 +401,14 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="cupoMinimo">
                             <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Minimo</Form.Label>
                             <Col >
-                                <Chips value={values.description2} onChange={(e) => updateValue({description2:e.value})}></Chips>
+                            <Form.Control
+                            value={values.cupoMinimo}
+                            required
+                            onChange={(event) => {
+                                updateValue({cupoMinimo: event.target.value})
+                            }}
+                            type="number"
+                            />
                             </Col>
                             {error.cupoMinimo&&<div className='error'>{error.cupoMinimo}</div>}
                         </Form.Group>
@@ -412,8 +437,8 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="fecha">
                             <Form.Label column>
                                 <DatePicker
-                                value={values.fecha}
-                                onChange={(date)=>updateValue({fecha:date})}
+                                value={values.fecha.map((item)=>item.date)}
+                                onChange={(date)=>updateValue({fecha:{date:date}})}
                                 format="DD/MM/YYYY HH:mm"
                                 sort
                                 multiple
@@ -430,7 +455,10 @@ const CreateTour = () => {
                             </Form.Label>
                             <Col >
                                 {
-                                    values.fecha.map((item)=><Row>{item.format('DD/MM/YYYY HH:mm')}</Row>)
+                                    values.fecha.map((item)=>
+                                    <Row>
+                                        {item.date.format('DD/MM/YYYY HH:mm')} {item?.state==='abierto'&&<Button onClick={()=>cancelarReserva(item.date)} style={{backgroundColor:'#C11313'}}>{item?.people}/{values.cupoMaximo} Cancelar Reserva</Button>}
+                                    </Row>)
                                 }
                             </Col>
                             {error.fecha&&<div className='error'>{error.fecha}</div>}
@@ -508,7 +536,7 @@ const CreateTour = () => {
                     </Col>
                 </Row>
                 <Row>
-                {position&&
+                {/* {position&&
                         <Map
                         mapboxAccessToken={constants.MAP_BOX_KEY}
                         initialViewState={{
@@ -529,7 +557,7 @@ const CreateTour = () => {
                             })
                             }
                         </Map>
-                }
+                } */}
                 </Row>
                 <Row>
                     {error.meetingPlace&&<div className='error'>{error.meetingPlace}</div>}
@@ -575,7 +603,7 @@ const CreateTour = () => {
                     <Col></Col>
 
                     <Col>
-                        <Button className="new" onClick={createTour}>Crear Paseo</Button>
+                        <Button className="new" onClick={editTour}>Editar Paseo</Button>
                     </Col>
                     <Col>
                         <Button className="cancel" onClick={goBack}>Cancelar</Button>
@@ -589,7 +617,7 @@ const CreateTour = () => {
             >
             <Modal.Dialog>
                 <Modal.Header>
-                    <Modal.Title>Creacion del Paseo</Modal.Title>
+                    <Modal.Title>Edicion del Paseo</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
@@ -624,10 +652,9 @@ const CreateTour = () => {
             </Modal.Dialog>
             </div>}
         {loading&&<Loader></Loader>}
-            
         </Container>
     )
 }
 
 
-export default CreateTour;
+export default EditTour;

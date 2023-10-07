@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -12,19 +12,20 @@ import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
-import { mainListItems } from './listItems';
+import MainListItems from './listItems';
 import { Route, Routes } from "react-router-dom";
 import { ParallaxProvider } from 'react-scroll-parallax';
 import DefaultLayout from '../../containers/DefaultLayout/DefaultLayout';
 import Constants from '../../assets/constants';
 import { useNavigate } from "react-router-dom";
 import constants from '../../assets/constants';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons'; 
 // pages
 import Home from '../pages/Home/Home';
 import TourList from '../pages/ToursList/ToursList';
 import CreateTour from '../pages/CreateTour/CreateTour';
+import { Button, Image } from 'react-bootstrap';
+import {signInWithGoogle, auth} from '../../services/googleAuth';
+import EditTour from '../pages/EditarTour/EditTour';
 
 function Copyright(props) {
   return (
@@ -92,9 +93,23 @@ const defaultTheme = createTheme();
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  const goToHome = () => {
+  const goToHome = () => {  
     navigate(constants.ROUTES.HOME)
   }
+  const onLogin = () =>{
+    signInWithGoogle().then(()=>{
+      navigate(constants.ROUTES.HOME)
+      window.location.reload(false);
+    })
+  }
+
+  const [user,setUser] = useState(null)
+
+  useEffect(()=>{
+    auth.authStateReady().then(()=>{
+      setUser(auth.currentUser)
+    })
+  },[])
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -113,37 +128,50 @@ export default function Dashboard() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              <IconButton
+              {user!==null&&<IconButton
               color="inherit"
               aria-label="open drawer"
               onClick={goToHome}
               >
                 <MenuIcon />
-              </IconButton>
+              </IconButton>}
               Tip Tours
             </Typography>
-            <Typography
+            {user!==null&&<Typography
               component="h1"
               variant="h6"
               color="inherit"
             >
-              Usuario
+              {user.displayName}
               <IconButton
               aria-label="open drawer"
-              style={{backgroundColor:"#FF8C42",marginLeft:8}}
+              style={{marginLeft:8}}
               >
-                <FontAwesomeIcon style={{color:'#4E598C'}} icon={faUser} />
+                <Image src={user.photoURL} style={{height:38,borderRadius:100}}></Image>
               </IconButton>
             </Typography>
+            }
+            {
+                user==null&&
+                <Typography
+                component="h1"
+                variant="h6"
+                color="inherit"
+                >
+                  <Button style={{backgroundColor:'transparent',border:'none'}} onClick={onLogin}>
+                    Login
+                  </Button>
+                </Typography>
+            }
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={true}>
+        {user!==null&&<Drawer variant="permanent" open={true}>
           <Divider />
           <List component="nav" style={{backgroundColor:'#BCBDBD',marginTop:54}}>
-            {mainListItems}
+            <MainListItems/>
             <Divider sx={{ my: 1 }} />
           </List>
-        </Drawer>
+        </Drawer>}
         <Box
           component="main"
           sx={{
@@ -154,13 +182,14 @@ export default function Dashboard() {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Container sx={{ mt: 4, mb: 4 }}>
 
             <ParallaxProvider>
               <DefaultLayout>
                 <Routes>
                   <Route path={Constants.ROUTES.HOME} element={<Home />}></Route>
                   <Route path={Constants.ROUTES.TOUR_LIST} element={<TourList />}></Route>
+                  <Route path={Constants.ROUTES.EDIT_LIST} element={<EditTour />}></Route>
                   <Route path={Constants.ROUTES.NEW_TOUR} element={<CreateTour />}></Route>
                   <Route path='*' element={<Home />} />
                 </Routes>

@@ -3,6 +3,7 @@ module.exports = {
         HOME: '/',
         TOUR_LIST: '/tours',
         NEW_TOUR: '/tours/new',
+        EDIT_LIST: '/tours/:id',
     },
     IDIOMAS:[
         'Español',
