@@ -99,10 +99,7 @@ export default function Dashboard() {
   const onLogin = () =>{
     signInWithGoogle().then(()=>{
       navigate(constants.ROUTES.HOME)
-      // window.location.reload(false);
-      auth.authStateReady().then(()=>{
-        setUser(auth.currentUser)
-      })
+      window.location.reload(false);
     })
   }
 
