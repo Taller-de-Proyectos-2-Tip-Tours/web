@@ -21,7 +21,6 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
-import { Chips } from 'primereact/chips';
 import Loader from '../../utils/Loader/Loader'
 
 const EditTour = () => {
@@ -71,7 +70,7 @@ const EditTour = () => {
     );
 
     const [modal, showModal] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
+    const [modalMessage, setModalMessage] = useState(['']);
 
     const [meetingPlace, setMeetingPlace] = useState([]);
 
@@ -108,6 +107,7 @@ const EditTour = () => {
             const tours = result.filter((item)=>item._id.$oid===id)
             if(tours&&tours.length>0) {
                 const tour = tours[0];
+                console.log(tour.dates)
                 updateValue({
                     tourName:tour.name,
                     description:tour.description,
@@ -116,7 +116,7 @@ const EditTour = () => {
                     cupoMaximo:tour.maxParticipants,
                     fecha:tour.dates.map((item)=>{
                         return {
-                            date: new DateObject(item.date),
+                            date: new DateObject({date:item.date.replace('T',' '),format:'YYYY-MM-DD HH:mm:ss'}),
                             people:item.people,
                             state:item.state
                         }
@@ -259,7 +259,7 @@ const EditTour = () => {
                 considerations: values.description2,
                 lenguage: values.idioma,
                 meetingPoint: values.puntoDeEncuentro,
-                dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
+                dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm:ss')),
                 mainImage: values.fotoPrincipal,
                 otherImages: values.fotosSecundarias,
                 markers:meetingPlace.map((item)=>{

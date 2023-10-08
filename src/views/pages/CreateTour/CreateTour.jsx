@@ -18,7 +18,6 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
-import { Chips } from 'primereact/chips';
 import Loader from '../../utils/Loader/Loader'
 
 const CreateTour = () => {
@@ -68,7 +67,7 @@ const CreateTour = () => {
     );
 
     const [modal, showModal] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
+    const [modalMessage, setModalMessage] = useState(['']);
 
     const [position, setPosition] = useState(null);
     const [meetingPlace, setMeetingPlace] = useState([]);
@@ -222,14 +221,14 @@ const CreateTour = () => {
                 considerations: values.description2,
                 lenguage: values.idioma,
                 meetingPoint: values.puntoDeEncuentro,
-                dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
+                dates: values.fecha.map((item)=>(item.format('YYYY-MM-DDTHH:mm')+':00')),
                 mainImage: values.fotoPrincipal,
                 otherImages: values.fotosSecundarias,
                 stops:meetingPlace.map((item,index)=>{
                     return {
                         lat:item.lat,
                         lon:item.lng,
-                        tag:index===0?'Inicio':index===meetingPlace.length?'Fin':'Punto Intermedio',
+                        tag:index===0?'Inicio':index===(meetingPlace.length-1)?'Fin':'Punto Intermedio',
                     }
                 }),
                 guide:{
@@ -389,7 +388,14 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="cupoMinimo">
                             <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Minimo</Form.Label>
                             <Col >
-                                <Chips value={values.description2} onChange={(e) => updateValue({description2:e.value})}></Chips>
+                            <Form.Control
+                            required
+                            value={values.cupoMinimo}
+                            onChange={(event) => {
+                                updateValue({cupoMinimo: event.target.value})
+                            }}
+                            type="number"
+                            />
                             </Col>
                             {error.cupoMinimo&&<div className='error'>{error.cupoMinimo}</div>}
                         </Form.Group>
