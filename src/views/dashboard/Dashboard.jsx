@@ -26,6 +26,8 @@ import CreateTour from '../pages/CreateTour/CreateTour';
 import { Button, Image } from 'react-bootstrap';
 import {signInWithGoogle, auth} from '../../services/googleAuth';
 import EditTour from '../pages/EditarTour/EditTour';
+import Logo from '../../assets/images/logo_texto_2.png';
+import Icon from '../../assets/images/LogoOpcion1-imagen 1.png';
 
 function Copyright(props) {
   return (
@@ -135,7 +137,8 @@ export default function Dashboard() {
               >
                 <MenuIcon />
               </IconButton>}
-              Tip Tours
+              <Image src={Icon} style={{height:25}}></Image>
+              <Image src={Logo} style={{height:25}}></Image>
             </Typography>
             {user!==null&&<Typography
               component="h1"
