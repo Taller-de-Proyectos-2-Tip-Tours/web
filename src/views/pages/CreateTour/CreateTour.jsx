@@ -221,14 +221,14 @@ const CreateTour = () => {
                 considerations: values.description2,
                 lenguage: values.idioma,
                 meetingPoint: values.puntoDeEncuentro,
-                dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
+                dates: values.fecha.map((item)=>(item.format('YYYY-MM-DDTHH:mm')+':00')),
                 mainImage: values.fotoPrincipal,
                 otherImages: values.fotosSecundarias,
                 stops:meetingPlace.map((item,index)=>{
                     return {
                         lat:item.lat,
                         lon:item.lng,
-                        tag:index===0?'Inicio':index===meetingPlace.length?'Fin':'Punto Intermedio',
+                        tag:index===0?'Inicio':index===(meetingPlace.length-1)?'Fin':'Punto Intermedio',
                     }
                 }),
                 guide:{

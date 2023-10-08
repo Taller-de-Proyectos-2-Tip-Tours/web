@@ -116,7 +116,7 @@ const EditTour = () => {
                     cupoMaximo:tour.maxParticipants,
                     fecha:tour.dates.map((item)=>{
                         return {
-                            date: new DateObject({date:item.date.replace('T',' '),format:'YYYY-MM-DD HH:mm'}),
+                            date: new DateObject({date:item.date.replace('T',' '),format:'YYYY-MM-DD HH:mm:ss'}),
                             people:item.people,
                             state:item.state
                         }
@@ -259,7 +259,7 @@ const EditTour = () => {
                 considerations: values.description2,
                 lenguage: values.idioma,
                 meetingPoint: values.puntoDeEncuentro,
-                dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm')),
+                dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm:ss')),
                 mainImage: values.fotoPrincipal,
                 otherImages: values.fotosSecundarias,
                 markers:meetingPlace.map((item)=>{
@@ -295,7 +295,7 @@ const EditTour = () => {
 
     const cancelarReserva = (date) => {
         setLoading(true)
-        apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm')}`)
+        apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm:ss')}`)
         .then((result)=>{
             console.log(result)
             searchTours()
