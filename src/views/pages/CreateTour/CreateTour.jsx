@@ -18,7 +18,6 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
-import { Chips } from 'primereact/chips';
 import Loader from '../../utils/Loader/Loader'
 
 const CreateTour = () => {
@@ -68,7 +67,7 @@ const CreateTour = () => {
     );
 
     const [modal, showModal] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
+    const [modalMessage, setModalMessage] = useState(['']);
 
     const [position, setPosition] = useState(null);
     const [meetingPlace, setMeetingPlace] = useState([]);
@@ -389,7 +388,14 @@ const CreateTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="cupoMinimo">
                             <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Minimo</Form.Label>
                             <Col >
-                                <Chips value={values.description2} onChange={(e) => updateValue({description2:e.value})}></Chips>
+                            <Form.Control
+                            required
+                            value={values.cupoMinimo}
+                            onChange={(event) => {
+                                updateValue({cupoMinimo: event.target.value})
+                            }}
+                            type="number"
+                            />
                             </Col>
                             {error.cupoMinimo&&<div className='error'>{error.cupoMinimo}</div>}
                         </Form.Group>
