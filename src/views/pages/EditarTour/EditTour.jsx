@@ -457,7 +457,15 @@ const EditTour = () => {
                                 {
                                     values.fecha.map((item)=>
                                     <Row>
-                                        {item.date.format('DD/MM/YYYY HH:mm')} {item?.state==='abierto'&&<Button onClick={()=>cancelarReserva(item.date)} style={{backgroundColor:'#C11313'}}>{item?.people}/{values.cupoMaximo} Cancelar Reserva</Button>}
+                                        <Col style={{textAlign:'center'}}>{item.date.format('DD/MM/YYYY HH:mm')}</Col>
+                                         
+                                        {
+                                        item?.state==='abierto'&&
+                                        <Col><Button onClick={()=>cancelarReserva(item.date)} style={{backgroundColor:'#C11313',textAlign:'center'}}>{item?.people}/{values.cupoMaximo} Cancelar Reserva</Button></Col>
+                                        }
+                                        {
+                                        item?.state!=='abierto'&&<Col><span style={{textAlign:'center'}}>{item?.state} {item?.people}/{values.cupoMaximo}</span></Col>
+                                        }
                                     </Row>)
                                 }
                             </Col>
