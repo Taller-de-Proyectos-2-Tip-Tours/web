@@ -122,7 +122,7 @@ const EditTour = () => {
                         }
                     }),
                     duracion:tour.duration,
-                    idioma:tour.language,
+                    idioma:tour.lenguage,
                     ciudad:tour.city,
                     puntoDeEncuentro:tour.meetingPoint,
                     fotoPrincipal:tour.mainImage,
