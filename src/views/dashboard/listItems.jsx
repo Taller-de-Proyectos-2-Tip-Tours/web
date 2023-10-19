@@ -17,7 +17,7 @@ const MainListItems = () => {
             <ListItemIcon style={{color:"white"}}>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText primary="Lista de Paseos" />
+            <ListItemText primary="Paseos" />
           </ListItemButton>
         </Link>
         <div onClick={()=>{

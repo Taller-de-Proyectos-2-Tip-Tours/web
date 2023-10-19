@@ -72,6 +72,7 @@ const EditTour = () => {
     const [modal, showModal] = useState(false);
     const [modalMessage, setModalMessage] = useState(['']);
 
+    const [position, setPosition] = useState(null);
     const [meetingPlace, setMeetingPlace] = useState([]);
 
     const [modalRemoveMarker, showModalRemoveMarker] = useState(false);
@@ -128,6 +129,13 @@ const EditTour = () => {
                     fotoPrincipal:tour.mainImage,
                     fotosSecundarias:tour.otherImages
                 })
+                setMeetingPlace(tour.stops.map((item)=>{
+                    return {
+                        lng:item.lon,
+                        lat:item.lat,
+                        tag:item.tag
+                    }
+                }))
             }
         })
         .catch(function (error) {
@@ -139,6 +147,7 @@ const EditTour = () => {
     const getPositionSuccess = (position) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
+        setPosition({lat:latitude,lng:longitude})
         console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
     }
       
@@ -358,8 +367,30 @@ const EditTour = () => {
     return (
         <Container>
             <Card>
-                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>{values.tourName}</Card.Title>
+                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>Edicion de Paseo</Card.Title>
                 <Card.Body>
+                <Row>
+                    <Col>
+                        <Form.Group as={Row} className="mb-3" controlId="tourName">
+                            <Form.Label column className={error.tourName?'error':''}>Nombre del Paseo</Form.Label>
+                            <Col >
+                            <Form.Control
+                            onChange={(event) => {
+                                updateValue({tourName: event.target.value})
+                            }}
+                            value={values.tourName}
+                            required
+                            type="text"
+                            maxLength={50}
+                            />
+                            </Col>
+                            {error.tourName&&<div className='error'>{error.tourName}</div>}
+                        </Form.Group>
+                    </Col>
+
+                    <Col>
+                    </Col>
+                </Row>
                 <Row>
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="description">
@@ -544,7 +575,7 @@ const EditTour = () => {
                     </Col>
                 </Row>
                 <Row>
-                {/* {position&&
+                {position&&
                         <Map
                         mapboxAccessToken={constants.MAP_BOX_KEY}
                         initialViewState={{
@@ -565,7 +596,7 @@ const EditTour = () => {
                             })
                             }
                         </Map>
-                } */}
+                }
                 </Row>
                 <Row>
                     {error.meetingPlace&&<div className='error'>{error.meetingPlace}</div>}
