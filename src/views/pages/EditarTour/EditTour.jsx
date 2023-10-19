@@ -17,11 +17,13 @@ import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import Image from 'react-bootstrap/Image';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import { faX } from '@fortawesome/free-solid-svg-icons';
+import { faX, faStar } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
 import Loader from '../../utils/Loader/Loader'
+import moment from 'moment/moment';
+import Pagination from 'react-bootstrap/Pagination';
 
 const EditTour = () => {
     const navigate = useNavigate();
@@ -79,7 +81,14 @@ const EditTour = () => {
     const [markerToErase, setMarkerToErase] = useState(null);
     
     const [user,setUser] = useState(null)
+    const [comments,setComents] = useState([])
+    const [commentsToShow,setComentsToShow] = useState([])
 
+    const [page,setPage] = useState(0)
+    const [pageSize,setPageSize] = useState(5)
+    const [cantPages,setPageCant] = useState(0)
+    
+    
     useEffect(()=>{
         if(markerToErase) showModalRemoveMarker(true);
         setModalMessage('')
@@ -97,6 +106,7 @@ const EditTour = () => {
 
     useEffect(()=>{
         if(user&&id) searchTours()
+        if(user&&id) getComments()
     },[user,id])
 
     const searchTours = () => {
@@ -143,6 +153,19 @@ const EditTour = () => {
             setLoading(false)
         })
     }
+
+    const getComments = () => {
+        apiClient.get(`/reviews/${id}?state=active`)
+        .then((result)=>{
+            setComentsToShow(result.slice(page*pageSize,(page+1)*pageSize))
+            setPageCant(Math.ceil(result.length/pageSize))
+            setComents([...result])
+        })
+    }
+
+    useEffect(()=>{
+        if(comments.length) setComentsToShow(comments.slice(page*pageSize,(page+1)*pageSize))
+    },[page])
 
     const getPositionSuccess = (position) => {
         const latitude = position.coords.latitude;
@@ -362,7 +385,17 @@ const EditTour = () => {
         updateValue({fotosSecundarias:images.toSpliced(index,1)})
     }
 
-
+    const getPaginationItems = () => {
+        const items = []
+        for(let i = 0; i < cantPages;i++) {
+            items.push(
+                <Pagination.Item key={i} active={i === page} onClick={()=>{setPage(i)}}>
+                    {i+1}
+                </Pagination.Item>
+            )
+        } 
+        return items
+    }
 
     return (
         <Container>
@@ -637,6 +670,34 @@ const EditTour = () => {
                         </Col>
                     )}
                 </Row>
+                <Row>
+                    {commentsToShow&&commentsToShow.map((item,index)=>{
+                        return <Card key={`${item?._id?.$oid}${index}`}>
+                            <Card.Title><Row style={{marginTop:4}}><Col>{item.userName}</Col><Col style={{fontSize:16}}>{moment(item.date).format('DD/MM/YYYY HH:ss')}</Col></Row></Card.Title>
+                            <Card.Body>
+                                <Row>{item.comment}</Row>
+                                <Row><span style={{justifyContent:'end',display:'flex'}}>{item.stars}<FontAwesomeIcon style={{color:'#caca03'}} icon={faStar}></FontAwesomeIcon></span></Row>
+                            </Card.Body>
+                        </Card>
+                    })}
+                </Row>
+                {comments&&
+                    <Pagination>
+                        <Pagination.First onClick={()=>setPage(0)} />
+                        <Pagination.Prev onClick={()=>{
+                            if(page-1>=0) {
+                                setPage(page-1)
+                            }
+                        }}/>
+                        {getPaginationItems()}
+                        <Pagination.Next  onClick={()=>{
+                            if(page+1<cantPages) {
+                                setPage(page+1)
+                            }
+                        }}/>
+                        <Pagination.Last onClick={()=>setPage(cantPages-1)}/>
+                    </Pagination>
+                }
                 <Row>
                     <Col></Col>
                     <Col></Col>
