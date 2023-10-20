@@ -24,6 +24,7 @@ import {auth} from '../../../services/googleAuth';
 import Loader from '../../utils/Loader/Loader'
 import moment from 'moment/moment';
 import Pagination from 'react-bootstrap/Pagination';
+import { Rating } from '@mui/material';
 
 const EditTour = () => {
     const navigate = useNavigate();
@@ -83,6 +84,7 @@ const EditTour = () => {
     const [user,setUser] = useState(null)
     const [comments,setComents] = useState([])
     const [commentsToShow,setComentsToShow] = useState([])
+    const [rating,setRating] = useState(null)
 
     const [page,setPage] = useState(0)
     const [pageSize,setPageSize] = useState(5)
@@ -159,9 +161,21 @@ const EditTour = () => {
         .then((result)=>{
             setComentsToShow(result.slice(page*pageSize,(page+1)*pageSize))
             setPageCant(Math.ceil(result.length/pageSize))
+
+            
+            console.log('rating',rating)
             setComents([...result])
         })
     }
+
+    useEffect(()=>{
+        if(comments.length>0) {
+            let rating = 0
+            const notCero = comments.filter((item)=>item.stars!==0)
+            rating = notCero.map(item=>item.stars).reduce((prev,curr)=>prev+curr)
+            setRating(rating)
+        }
+    },[comments])
 
     useEffect(()=>{
         if(comments.length) setComentsToShow(comments.slice(page*pageSize,(page+1)*pageSize))
@@ -670,19 +684,24 @@ const EditTour = () => {
                         </Col>
                     )}
                 </Row>
-                <Row>
+                {rating&&<Row style={{marginTop:12,marginBottom:12,alignItems:'center'}}>
+                    <Col><h2>Valoraciones</h2></Col>
+                    <Col><Rating defaultValue={rating} precision={0.5} readOnly /></Col>
+                </Row>}
+                <Row style={{justifyContent:'center'}}>
+                    <h2>Reseñas</h2>
                     {commentsToShow&&commentsToShow.map((item,index)=>{
-                        return <Card key={`${item?._id?.$oid}${index}`}>
-                            <Card.Title><Row style={{marginTop:4}}><Col>{item.userName}</Col><Col style={{fontSize:16}}>{moment(item.date).format('DD/MM/YYYY HH:ss')}</Col></Row></Card.Title>
+                        return <Card style={{paddingLeft:0,paddingRight:0,maxWidth:600}} key={`${item?._id?.$oid}${index}`}>
+                            <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:8}}><Row style={{marginTop:4}}><Col>{item.userName}</Col><Col style={{fontSize:16}}>{moment(item.date).format('DD/MM/YYYY HH:ss')}</Col></Row></Card.Title>
                             <Card.Body>
                                 <Row>{item.comment}</Row>
-                                <Row><span style={{justifyContent:'end',display:'flex'}}>{item.stars}<FontAwesomeIcon style={{color:'#caca03'}} icon={faStar}></FontAwesomeIcon></span></Row>
+                                <Row><span style={{justifyContent:'end',display:'flex',alignItems:'center'}}>{item.stars}<FontAwesomeIcon style={{color:'#caca03'}} icon={faStar}></FontAwesomeIcon></span></Row>
                             </Card.Body>
                         </Card>
                     })}
                 </Row>
                 {comments&&
-                    <Pagination>
+                    <Pagination style={{justifyContent:'center'}}>
                         <Pagination.First onClick={()=>setPage(0)} />
                         <Pagination.Prev onClick={()=>{
                             if(page-1>=0) {
