@@ -17,11 +17,14 @@ import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import Image from 'react-bootstrap/Image';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import { faX } from '@fortawesome/free-solid-svg-icons';
+import { faX, faStar } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
 import {auth} from '../../../services/googleAuth';
 import Loader from '../../utils/Loader/Loader'
+import moment from 'moment/moment';
+import Pagination from 'react-bootstrap/Pagination';
+import { Rating } from '@mui/material';
 
 const EditTour = () => {
     const navigate = useNavigate();
@@ -72,13 +75,22 @@ const EditTour = () => {
     const [modal, showModal] = useState(false);
     const [modalMessage, setModalMessage] = useState(['']);
 
+    const [position, setPosition] = useState(null);
     const [meetingPlace, setMeetingPlace] = useState([]);
 
     const [modalRemoveMarker, showModalRemoveMarker] = useState(false);
     const [markerToErase, setMarkerToErase] = useState(null);
     
     const [user,setUser] = useState(null)
+    const [comments,setComents] = useState([])
+    const [commentsToShow,setComentsToShow] = useState([])
+    const [rating,setRating] = useState(null)
 
+    const [page,setPage] = useState(0)
+    const [pageSize,setPageSize] = useState(5)
+    const [cantPages,setPageCant] = useState(0)
+    
+    
     useEffect(()=>{
         if(markerToErase) showModalRemoveMarker(true);
         setModalMessage('')
@@ -86,8 +98,6 @@ const EditTour = () => {
 
     useEffect(()=>{
         getCities()
-        navigator.geolocation.getCurrentPosition(getPositionSuccess, getPositionError);
-
         auth.authStateReady().then(()=>{
             setUser(auth.currentUser)
         })
@@ -96,6 +106,7 @@ const EditTour = () => {
 
     useEffect(()=>{
         if(user&&id) searchTours()
+        if(user&&id) getComments()
     },[user,id])
 
     const searchTours = () => {
@@ -128,6 +139,19 @@ const EditTour = () => {
                     fotoPrincipal:tour.mainImage,
                     fotosSecundarias:tour.otherImages
                 })
+                const firstStep = tour.stops[0]
+                setPosition({
+                    lng:firstStep.lon,
+                    lat:firstStep.lat,
+                    tag:firstStep.tag
+                })
+                setMeetingPlace(tour.stops.map((item)=>{
+                    return {
+                        lng:item.lon,
+                        lat:item.lat,
+                        tag:item.tag
+                    }
+                }))
             }
         })
         .catch(function (error) {
@@ -136,15 +160,30 @@ const EditTour = () => {
         })
     }
 
-    const getPositionSuccess = (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    const getComments = () => {
+        apiClient.get(`/reviews/${id}?state=active`)
+        .then((result)=>{
+            setComentsToShow(result.slice(page*pageSize,(page+1)*pageSize))
+            setPageCant(Math.ceil(result.length/pageSize))
+
+            
+            console.log('rating',rating)
+            setComents([...result])
+        })
     }
-      
-    const getPositionError = () => {
-        console.log("Unable to retrieve your location");
-    }
+
+    useEffect(()=>{
+        if(comments.length>0) {
+            let rating = 0
+            const notCero = comments.filter((item)=>item.stars!==0)
+            rating = notCero.map(item=>item.stars).reduce((prev,curr)=>prev+curr)
+            setRating(rating)
+        }
+    },[comments])
+
+    useEffect(()=>{
+        if(comments.length) setComentsToShow(comments.slice(page*pageSize,(page+1)*pageSize))
+    },[page])
 
     const getCities = async () => {
         const cities = await apiClient.get('/cities')
@@ -353,13 +392,45 @@ const EditTour = () => {
         updateValue({fotosSecundarias:images.toSpliced(index,1)})
     }
 
-
+    const getPaginationItems = () => {
+        const items = []
+        for(let i = 0; i < cantPages;i++) {
+            items.push(
+                <Pagination.Item key={i} active={i === page} onClick={()=>{setPage(i)}}>
+                    {i+1}
+                </Pagination.Item>
+            )
+        } 
+        return items
+    }
 
     return (
         <Container>
             <Card>
-                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>{values.tourName}</Card.Title>
+                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>Edicion de Paseo</Card.Title>
                 <Card.Body>
+                <Row>
+                    <Col>
+                        <Form.Group as={Row} className="mb-3" controlId="tourName">
+                            <Form.Label column className={error.tourName?'error':''}>Nombre del Paseo</Form.Label>
+                            <Col >
+                            <Form.Control
+                            onChange={(event) => {
+                                updateValue({tourName: event.target.value})
+                            }}
+                            value={values.tourName}
+                            required
+                            type="text"
+                            maxLength={50}
+                            />
+                            </Col>
+                            {error.tourName&&<div className='error'>{error.tourName}</div>}
+                        </Form.Group>
+                    </Col>
+
+                    <Col>
+                    </Col>
+                </Row>
                 <Row>
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="description">
@@ -544,7 +615,7 @@ const EditTour = () => {
                     </Col>
                 </Row>
                 <Row>
-                {/* {position&&
+                {position&&
                         <Map
                         mapboxAccessToken={constants.MAP_BOX_KEY}
                         initialViewState={{
@@ -565,7 +636,7 @@ const EditTour = () => {
                             })
                             }
                         </Map>
-                } */}
+                }
                 </Row>
                 <Row>
                     {error.meetingPlace&&<div className='error'>{error.meetingPlace}</div>}
@@ -606,6 +677,39 @@ const EditTour = () => {
                         </Col>
                     )}
                 </Row>
+                {rating&&<Row style={{marginTop:12,marginBottom:12,alignItems:'center'}}>
+                    <Col><h2>Valoraciones</h2></Col>
+                    <Col><Rating defaultValue={rating} precision={0.5} readOnly /></Col>
+                </Row>}
+                <Row style={{justifyContent:'center'}}>
+                    <h2>Reseñas</h2>
+                    {commentsToShow&&commentsToShow.map((item,index)=>{
+                        return <Card style={{paddingLeft:0,paddingRight:0,maxWidth:600,marginBottom:12}} key={`${item?._id?.$oid}${index}`}>
+                            <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:8}}><Row style={{marginTop:4}}><Col>{item.userName}</Col><Col style={{fontSize:16}}>{moment(item.date).format('DD/MM/YYYY HH:ss')}</Col></Row></Card.Title>
+                            <Card.Body>
+                                <Row>{item.comment}</Row>
+                                <Row><span style={{justifyContent:'end',display:'flex',alignItems:'center'}}>{item.stars}<FontAwesomeIcon style={{color:'#caca03'}} icon={faStar}></FontAwesomeIcon></span></Row>
+                            </Card.Body>
+                        </Card>
+                    })}
+                </Row>
+                {comments&&
+                    <Pagination style={{justifyContent:'center'}}>
+                        <Pagination.First onClick={()=>setPage(0)} />
+                        <Pagination.Prev onClick={()=>{
+                            if(page-1>=0) {
+                                setPage(page-1)
+                            }
+                        }}/>
+                        {getPaginationItems()}
+                        <Pagination.Next  onClick={()=>{
+                            if(page+1<cantPages) {
+                                setPage(page+1)
+                            }
+                        }}/>
+                        <Pagination.Last onClick={()=>setPage(cantPages-1)}/>
+                    </Pagination>
+                }
                 <Row>
                     <Col></Col>
                     <Col></Col>

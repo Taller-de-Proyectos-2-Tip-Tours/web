@@ -43,7 +43,7 @@ const TourList = () => {
 
     useEffect(()=>{
         if(user) searchTours()
-    },[user])
+    },[user,filters.city,filters.name])
 
     const getCities = async () => {
         const cities = await apiClient.get('/cities')
@@ -89,13 +89,6 @@ const TourList = () => {
                         Nuevo Paseo
                     </Button>
                 </Col>
-                <Col>
-                    <Button className='primary-button' onClick={searchTours}>
-                        <FontAwesomeIcon icon={faRefresh} className='button-icon'></FontAwesomeIcon>
-                        Recargar
-                    </Button>
-                </Col>
-
                 <Col>
                     <Button className='primary-button' onClick={()=>setShowFilters(!showFilters)}>
                         <FontAwesomeIcon icon={faFilter} className='button-icon'></FontAwesomeIcon>
