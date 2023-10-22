@@ -98,8 +98,6 @@ const EditTour = () => {
 
     useEffect(()=>{
         getCities()
-        navigator.geolocation.getCurrentPosition(getPositionSuccess, getPositionError);
-
         auth.authStateReady().then(()=>{
             setUser(auth.currentUser)
         })
@@ -141,6 +139,12 @@ const EditTour = () => {
                     fotoPrincipal:tour.mainImage,
                     fotosSecundarias:tour.otherImages
                 })
+                const firstStep = tour.stops[0]
+                setPosition({
+                    lng:firstStep.lon,
+                    lat:firstStep.lat,
+                    tag:firstStep.tag
+                })
                 setMeetingPlace(tour.stops.map((item)=>{
                     return {
                         lng:item.lon,
@@ -180,17 +184,6 @@ const EditTour = () => {
     useEffect(()=>{
         if(comments.length) setComentsToShow(comments.slice(page*pageSize,(page+1)*pageSize))
     },[page])
-
-    const getPositionSuccess = (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        setPosition({lat:latitude,lng:longitude})
-        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-    }
-      
-    const getPositionError = () => {
-        console.log("Unable to retrieve your location");
-    }
 
     const getCities = async () => {
         const cities = await apiClient.get('/cities')
