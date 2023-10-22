@@ -691,7 +691,7 @@ const EditTour = () => {
                 <Row style={{justifyContent:'center'}}>
                     <h2>Reseñas</h2>
                     {commentsToShow&&commentsToShow.map((item,index)=>{
-                        return <Card style={{paddingLeft:0,paddingRight:0,maxWidth:600}} key={`${item?._id?.$oid}${index}`}>
+                        return <Card style={{paddingLeft:0,paddingRight:0,maxWidth:600,marginBottom:12}} key={`${item?._id?.$oid}${index}`}>
                             <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:8}}><Row style={{marginTop:4}}><Col>{item.userName}</Col><Col style={{fontSize:16}}>{moment(item.date).format('DD/MM/YYYY HH:ss')}</Col></Row></Card.Title>
                             <Card.Body>
                                 <Row>{item.comment}</Row>
