@@ -18,16 +18,20 @@ import { ParallaxProvider } from 'react-scroll-parallax';
 import DefaultLayout from '../../containers/DefaultLayout/DefaultLayout';
 import Constants from '../../assets/constants';
 import { useNavigate } from "react-router-dom";
+import { Button, Image } from 'react-bootstrap';
+
 import constants from '../../assets/constants';
+import Logo from '../../assets/images/logo_texto_2.png';
+import Icon from '../../assets/images/LogoOpcion1-imagen 1.png';
+import {signInWithGoogle, auth} from '../../services/googleAuth';
 // pages
 import Home from '../pages/Home/Home';
 import TourList from '../pages/ToursList/ToursList';
 import CreateTour from '../pages/CreateTour/CreateTour';
-import { Button, Image } from 'react-bootstrap';
-import {signInWithGoogle, auth} from '../../services/googleAuth';
 import EditTour from '../pages/EditarTour/EditTour';
-import Logo from '../../assets/images/logo_texto_2.png';
-import Icon from '../../assets/images/LogoOpcion1-imagen 1.png';
+import Comments from '../pages/Comments/Comments.jsx';
+
+
 
 function Copyright(props) {
   return (
@@ -193,6 +197,7 @@ export default function Dashboard() {
                   <Route path={Constants.ROUTES.HOME} element={<Home />}></Route>
                   <Route path={Constants.ROUTES.TOUR_LIST} element={<TourList />}></Route>
                   <Route path={Constants.ROUTES.EDIT_LIST} element={<EditTour />}></Route>
+                  <Route path={Constants.ROUTES.COMENTS} element={<Comments />}></Route>
                   <Route path={Constants.ROUTES.NEW_TOUR} element={<CreateTour />}></Route>
                   <Route path='*' element={<Home />} />
                 </Routes>
