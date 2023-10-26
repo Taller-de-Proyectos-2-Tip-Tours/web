@@ -82,6 +82,7 @@ const EditTour = () => {
     const [markerToErase, setMarkerToErase] = useState(null);
     
     const [user,setUser] = useState(null)
+    const [dates,editDates] = useState(null)
     
     
     useEffect(()=>{
@@ -109,19 +110,19 @@ const EditTour = () => {
             if(result) {
                 const tour = result;
                 console.log(tour.dates)
+                editDates(tour.dates.map((item)=>{
+                    return {
+                        date: new DateObject({date:item.date.replace('T',' '),format:'YYYY-MM-DD HH:mm:ss'}),
+                        people:item.people,
+                        state:item.state
+                    }
+                }))
                 updateValue({
                     tourName:tour.name,
                     description:tour.description,
                     description2:tour.considerations,
                     cupoMinimo:tour.minParticipants,
                     cupoMaximo:tour.maxParticipants,
-                    fecha:tour.dates.map((item)=>{
-                        return {
-                            date: new DateObject({date:item.date.replace('T',' '),format:'YYYY-MM-DD HH:mm:ss'}),
-                            people:item.people,
-                            state:item.state
-                        }
-                    }),
                     duracion:tour.duration,
                     idioma:tour.lenguage,
                     ciudad:tour.city,
@@ -164,7 +165,7 @@ const EditTour = () => {
         }
     }
 
-    const editTour = ()=> {
+    const editTour = async ()=> {
         setError(
             {
                 tourName:'',
@@ -225,7 +226,7 @@ const EditTour = () => {
             setError({ciudad:'La Ciudad es un campo obligatorio'})
         }
 
-        if(values.fecha.length===0) {
+        if(values.fecha.length===0&&dates.length===0) {
             invalid = true
             setError({fecha:'Tiene que agregar como minimo una fecha'})
         }
@@ -256,6 +257,7 @@ const EditTour = () => {
 
         if(!invalid){
             const data = {
+                name:values.tourName,
                 duration: values.duracion,
                 description: values.description,
                 minParticipants: values.cupoMinimo,
@@ -264,22 +266,52 @@ const EditTour = () => {
                 considerations: values.description2,
                 lenguage: values.idioma,
                 meetingPoint: values.puntoDeEncuentro,
-                dates: values.fecha.map((item)=>item.format('YYYY-MM-DDTHH:mm:ss')),
+                dates: [
+                    ...dates.map((item)=>{
+                        return {
+                            date:item.date.format('YYYY-MM-DDTHH:mm:ss'),
+                            people:item.people,
+                            state:item.state,
+                        }
+                     }),
+                     ...values.fecha.map((item)=>{
+                        return {
+                            date:item.format('YYYY-MM-DDTHH:mm:ss'),
+                            people:0,
+                            state:"abierto",
+                        }   
+                    })],
                 mainImage: values.fotoPrincipal,
                 otherImages: values.fotosSecundarias,
-                markers:meetingPlace.map((item)=>{
+                stops:meetingPlace.map((item,index)=>{
                     return {
                         lat:item.lat,
                         lon:item.lng,
-                        tag:'',
+                        tag:item.tag?item.tag:(index===0?'Inicio':index===(meetingPlace.length-1)?'Fin':'Punto Intermedio'),
                     }
                 }),
                 guide:{
                     name:user.displayName,
                     email:user.email,
-                }
+                },
             }
             console.log(data)
+            try {
+                setLoading(true)
+                await apiClient.put(`/tours/${id}`,data)
+                setLoading(false)
+                navigate(-1)
+            } catch (error) {
+                setLoading(false)
+                let errorMsg = []
+                for(const err in error.response.data) {
+                    errorMsg.push(`${err}: ${error.response.data[err].join(' ')}`)
+                }
+                setModalMessage(errorMsg)
+                showModal(true)
+                setLoading(false)
+                console.log(error.response.data)
+            }
         }
     }
 
@@ -463,8 +495,8 @@ const EditTour = () => {
                         <Form.Group as={Row} className="mb-3" controlId="fecha">
                             <Form.Label column>
                                 <DatePicker
-                                value={values.fecha.map((item)=>item.date)}
-                                onChange={(date)=>updateValue({fecha:{date:date}})}
+                                value={values.fecha}
+                                onChange={(date)=>updateValue({fecha:date})}
                                 format="DD/MM/YYYY HH:mm"
                                 sort
                                 multiple
@@ -481,7 +513,7 @@ const EditTour = () => {
                             </Form.Label>
                             <Col >
                                 {
-                                    values.fecha.map((item)=>
+                                    dates&&dates.map((item)=>
                                     <Row>
                                         <Col style={{textAlign:'center'}}>{item.date.format('DD/MM/YYYY HH:mm')}</Col>
                                          
@@ -493,6 +525,9 @@ const EditTour = () => {
                                         item?.state!=='abierto'&&<Col><span style={{textAlign:'center'}}>{item?.state} {item?.people}/{values.cupoMaximo}</span></Col>
                                         }
                                     </Row>)
+                                }
+                                {
+                                    values.fecha.map((item)=><Row>{item.format('DD/MM/YYYY HH:mm')}</Row>)
                                 }
                             </Col>
                             {error.fecha&&<div className='error'>{error.fecha}</div>}
