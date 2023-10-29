@@ -68,6 +68,7 @@ const CreateTour = () => {
 
     const [modal, showModal] = useState(false);
     const [modalMessage, setModalMessage] = useState(['']);
+    const [errorPost, setErrorPost] = useState(false);
 
     const [position, setPosition] = useState(null);
     const [meetingPlace, setMeetingPlace] = useState([]);
@@ -209,6 +210,7 @@ const CreateTour = () => {
             setError({meetingPlace:'El punto de Inicio es obligatorio'})
         }
         console.log(meetingPlace)
+        setErrorPost(false)
 
         if(!invalid){
             const data = {
@@ -247,8 +249,9 @@ const CreateTour = () => {
             .catch((error)=>{
                 let errorMsg = []
                 for(const err in error.response.data) {
-                    errorMsg.push(`${err}: ${error.response.data[err].join(' ')}`)
+                    errorMsg.push(`${err}: ${Array.isArray(error.response.data[err])?error.response.data[err].join(' '):error.response.data[err]}`)
                 }
+                setErrorPost(true)
                 setModalMessage(errorMsg)
                 showModal(true)
                 setLoading(false)
@@ -270,6 +273,11 @@ const CreateTour = () => {
         } else {
             setError({fotoPrincipal:'El archivo no es image/jpeg o image/png'})
         }
+    }
+
+    const handleClose = () => {
+        console.log('handleClose',!errorPost)
+        if(!errorPost) navigate(-1)
     }
 
 
@@ -609,7 +617,10 @@ const CreateTour = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={()=>showModal(false)}>Cerrar</Button>
+                    <Button variant="secondary" onClick={()=>{
+                        showModal(false)
+                        handleClose()
+                    }}>Cerrar</Button>
                 </Modal.Footer>
             </Modal.Dialog>
             </div>}
