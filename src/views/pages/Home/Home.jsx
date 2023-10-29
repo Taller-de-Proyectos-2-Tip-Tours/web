@@ -49,7 +49,7 @@ const Home = () => {
                     marginTop:8,
                 }}
                 >
-                <Google /> Login
+                <Google /> Iniciar sesión
               </IconButton>}
             </div>
         </ Paper>

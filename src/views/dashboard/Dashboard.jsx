@@ -166,7 +166,7 @@ export default function Dashboard() {
                 color="inherit"
                 >
                   <Button style={{backgroundColor:'transparent',border:'none'}} onClick={onLogin}>
-                    Login
+                  Iniciar sesión
                   </Button>
                 </Typography>
             }
