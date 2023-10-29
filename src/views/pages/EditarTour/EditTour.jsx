@@ -84,6 +84,8 @@ const EditTour = () => {
     const [user,setUser] = useState(null)
     const [dates,editDates] = useState(null)
     
+    const [cacelarReservaPopUp, showCacelarReservaPopUp] = useState(false);
+
     
     useEffect(()=>{
         if(markerToErase) showModalRemoveMarker(true);
@@ -330,6 +332,8 @@ const EditTour = () => {
         }
     }
 
+
+
     const cancelarReserva = (date) => {
         setLoading(true)
         apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm:ss')}`)
@@ -339,8 +343,10 @@ const EditTour = () => {
             setModalMessage(['La fecha fue cancelada con éxito.'])
             showModal(true)
             setLoading(false)
+            showCacelarReservaPopUp(null)
         }).catch((err)=>{
             setLoading(false)
+            showCacelarReservaPopUp(null)
             console.log(err)
         })
     }
@@ -519,7 +525,7 @@ const EditTour = () => {
                                          
                                         {
                                         item?.state==='abierto'&&
-                                        <Col><Button onClick={()=>cancelarReserva(item.date)} style={{backgroundColor:'#C11313',textAlign:'center'}}>{item?.people}/{values.cupoMaximo} Cancelar Reserva</Button></Col>
+                                        <Col><Button onClick={()=>showCacelarReservaPopUp(item.date)} style={{backgroundColor:'#C11313',textAlign:'center'}}>{item?.people}/{values.cupoMaximo} Cancelar Reserva</Button></Col>
                                         }
                                         {
                                         item?.state!=='abierto'&&<Col><span style={{textAlign:'center'}}>{item?.state} {item?.people}/{values.cupoMaximo}</span></Col>
@@ -710,12 +716,32 @@ const EditTour = () => {
                 <Modal.Footer>
                     <Button variant="primary" onClick={()=>{
                         setMeetingPlace(meetingPlace.toSpliced(markerToErase,1))
-                        showModalRemoveMarker(false)
+                        showModalRemoveMarker(null)
                         setMarkerToErase(null);
                     }}>Confirmar</Button>
                     <Button variant="secondary" onClick={()=>{
                         setMarkerToErase(null);
                         showModalRemoveMarker(false)
+                    }}>Cerrar</Button>
+                </Modal.Footer>
+            </Modal.Dialog>
+            </div>}
+            {cacelarReservaPopUp&&<div
+                className="modal show modal-full-page"
+            >
+            <Modal.Dialog>
+                <Modal.Header>
+                    <Modal.Title>¿Quiere Cancelar la reserva?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Si cancela la Fecha se enviara una notificacion a las persona anotadas
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={()=>{
+                        cancelarReserva(cacelarReservaPopUp)
+                    }}>Confirmar</Button>
+                    <Button variant="secondary" onClick={()=>{
+                        showCacelarReservaPopUp(null)
                     }}>Cerrar</Button>
                 </Modal.Footer>
             </Modal.Dialog>
