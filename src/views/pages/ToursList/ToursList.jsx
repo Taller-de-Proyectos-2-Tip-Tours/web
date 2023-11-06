@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import constants from '../../../assets/constants';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
-import {auth} from '../../../services/googleAuth';
+import {auth,getToken} from '../../../services/googleAuth';
 import Loader from '../../utils/Loader/Loader';
 import Form from 'react-bootstrap/Form';
 
@@ -46,11 +46,16 @@ const TourList = () => {
     },[user,filters.city,filters.name])
 
     const getCities = async () => {
-        const cities = await apiClient.get('/cities')
-        setCities(cities)
+        try {
+            const token = await getToken()
+            const cities = await apiClient.get('/cities',{headers:{'token':token}})
+            setCities(cities)
+        } catch (err) {
+            console.err('getCities',err)
+        }
     }
 
-    const searchTours = () => {
+    const searchTours = async () => {
         setLoading(true);
         let params = ''
         if(filters.city) {
@@ -59,7 +64,8 @@ const TourList = () => {
         if(filters.name) {
             params += `&name=${filters.name}`
         }
-        apiClient.get(`/tours?guideEmail=${user.email}${params}`)
+        const token = await getToken()
+        apiClient.get(`/tours?guideEmail=${user.email}${params}`,{headers:{'token':token}})
         .then((result)=>{
             console.log(result)
             setTours(result)

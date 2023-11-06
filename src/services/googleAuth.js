@@ -45,10 +45,14 @@ const getUser = () => {
     return auth.currentUser
 }
 
+const getToken  = async () => {
+    return await auth.currentUser.getIdToken()
+}
 export {
     auth,
     signInWithGoogle,
     logout,
     isLogIn,
     getUser,
+    getToken
 };

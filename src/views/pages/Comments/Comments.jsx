@@ -16,6 +16,7 @@ import moment from 'moment/moment';
 import Pagination from 'react-bootstrap/Pagination';
 import { Rating } from '@mui/material';
 import Modal from 'react-bootstrap/Modal';
+import {getToken} from '../../../services/googleAuth';
 
 const Comments = () => {
     const { id } = useParams();
@@ -33,8 +34,9 @@ const Comments = () => {
         if(id) getComments()
     },[id])
 
-    const getComments = () => {
-        apiClient.get(`/reviews/${id}?state=active`)
+    const getComments = async () => {
+        const token = await getToken()
+        apiClient.get(`/reviews/${id}?state=active`,{headers:{'token':token}})
         .then((result)=>{
             setComentsToShow(result.slice(page*pageSize,(page+1)*pageSize))
             setPageCant(Math.ceil(result.length/pageSize))
