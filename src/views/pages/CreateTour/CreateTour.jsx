@@ -17,7 +17,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
-import {auth} from '../../../services/googleAuth';
+import {auth,getToken} from '../../../services/googleAuth';
 import Loader from '../../utils/Loader/Loader'
 
 const CreateTour = () => {
@@ -103,7 +103,8 @@ const CreateTour = () => {
     }
 
     const getCities = async () => {
-        const cities = await apiClient.get('/cities')
+        const token = await getToken()
+        const cities = await apiClient.get('/cities',{headers:{'token':token}})
         setCities(cities)
     }
 
@@ -120,7 +121,7 @@ const CreateTour = () => {
         }
     }
 
-    const createTour = ()=> {
+    const createTour = async ()=> {
         setError(
             {
                 tourName:'',
@@ -240,7 +241,9 @@ const CreateTour = () => {
             }
             console.log(data)
             setLoading(true)
-            apiClient.post('/tours',data)
+            const token = await getToken()
+
+            apiClient.post('/tours',data,{headers:{'token':token}})
             .then((result)=>{
                 setModalMessage(['Se cargó el paseo exitosamente.'])
                 showModal(true)

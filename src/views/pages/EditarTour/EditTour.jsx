@@ -20,7 +20,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faX, faStar } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 import Map, {Marker} from 'react-map-gl';
-import {auth} from '../../../services/googleAuth';
+import {auth, getToken} from '../../../services/googleAuth';
 import Loader from '../../utils/Loader/Loader'
 import moment from 'moment/moment';
 import Pagination from 'react-bootstrap/Pagination';
@@ -104,9 +104,11 @@ const EditTour = () => {
         if(user&&id) searchTours()
     },[user,id])
 
-    const searchTours = () => {
+    const searchTours = async () => {
         setLoading(true)
-        apiClient.get(`/tours/${id}`)
+        const token = 'admin'//await getToken()
+        console.log('token',token)
+        apiClient.get(`/tours/${id}`,{headers:{"token":token}})
         .then((result)=>{
             setLoading(false)
             if(result) {
@@ -148,15 +150,21 @@ const EditTour = () => {
             }
         })
         .catch(function (error) {
-            console.log(error);
+            console.err(error);
             setLoading(false)
         })
     }
 
 
     const getCities = async () => {
-        const cities = await apiClient.get('/cities')
-        setCities(cities)
+        try {
+            const token = 'admin' //await getToken()
+            const cities = await apiClient.get('/cities',{headers:{'token':token}})
+            setCities(cities)
+        } catch (err) {
+            console.err('getCities',err)
+        }
+        
     }
 
     const setMarker = (event) => {
@@ -300,7 +308,9 @@ const EditTour = () => {
             console.log(data)
             try {
                 setLoading(true)
-                await apiClient.put(`/tours/${id}`,data)
+                const token = await getToken()
+
+                await apiClient.put(`/tours/${id}`,data,{headers:{'token':token}})
                 setLoading(false)
                 navigate(-1)
             } catch (error) {
@@ -334,9 +344,10 @@ const EditTour = () => {
 
 
 
-    const cancelarReserva = (date) => {
+    const cancelarReserva = async (date) => {
         setLoading(true)
-        apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm:ss')}`)
+        const token = await getToken()
+        apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm:ss')}`,{headers:{'token':token}})
         .then((result)=>{
             console.log(result)
             searchTours()
