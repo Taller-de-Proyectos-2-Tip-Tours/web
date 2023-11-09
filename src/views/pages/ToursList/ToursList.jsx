@@ -129,8 +129,8 @@ const TourList = () => {
                                 <Form.Select placeholder='Ciudad' value={filters.city} onChange={(event) => {
                                     updateFilters({ city: event.target.value})
                                 }}>
-                                    <option value={''}></option>
-                                    {cities.map((item)=><option value={item.name}>{item.name}</option>)}
+                                    <option key='blankChoice' hidden={filters.city===''} value='' >{filters.city===''?'Ciudad':''}</option>
+                                    {cities.map((item)=><option key={item.name} value={item.name}>{item.name}</option>)}
                                 </Form.Select>
                             </Col>
                         </Form.Group>

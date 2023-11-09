@@ -411,7 +411,7 @@ const EditTour = () => {
     return (
         <Container>
             <Card>
-                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>Edicion de Paseo</Card.Title>
+                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>Edición de Paseo</Card.Title>
                 <Card.Body>
                 <Row>
                     <Col>
@@ -438,7 +438,7 @@ const EditTour = () => {
                 <Row>
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="description">
-                            <Form.Label column className={error.description?'error':''}>Descripcion</Form.Label>
+                            <Form.Label column className={error.description?'error':''}>Descripción</Form.Label>
                             <Col >
                             <Form.Control
                             value={values.description}
@@ -474,7 +474,7 @@ const EditTour = () => {
                 <Row>
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="cupoMinimo">
-                            <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Minimo</Form.Label>
+                            <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Mínimo</Form.Label>
                             <Col >
                             <Form.Control
                             value={values.cupoMinimo}
@@ -491,7 +491,7 @@ const EditTour = () => {
 
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="cupoMaximo">
-                            <Form.Label column className={error.cupoMaximo?'error':''}>Cupo Maximo</Form.Label>
+                            <Form.Label column className={error.cupoMaximo?'error':''}>Cupo Máximo</Form.Label>
                             <Col >
                             <Form.Control
                             required
@@ -553,7 +553,7 @@ const EditTour = () => {
 
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="duracion">
-                            <Form.Label column className={error.duracion?'error':''}>Duracion</Form.Label>
+                            <Form.Label column className={error.duracion?'error':''}>Duración</Form.Label>
                             <Col >
                             <Form.Control
                             required
@@ -689,7 +689,7 @@ const EditTour = () => {
                     <Col></Col>
 
                     <Col>
-                        <Button className="new" onClick={editTour}>Editar Paseo</Button>
+                        <Button className="new" onClick={editTour}>Guardar</Button>
                     </Col>
                     <Col>
                         <Button className="cancel" onClick={goBack}>Cancelar</Button>

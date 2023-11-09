@@ -333,7 +333,7 @@ const CreateTour = () => {
     return (
         <Container>
             <Card>
-                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>Creacion de Paseo</Card.Title>
+                <Card.Title style={{backgroundColor:'#4E598C',color:'white',paddingLeft:12}}>Creación de Paseo</Card.Title>
                 <Card.Body>
                 <Row>
                     <Col>
@@ -361,7 +361,7 @@ const CreateTour = () => {
                 <Row>
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="description">
-                            <Form.Label column className={error.description?'error':''}>Descripcion</Form.Label>
+                            <Form.Label column className={error.description?'error':''}>Descripción</Form.Label>
                             <Col >
                             <Form.Control
                             value={values.description}
@@ -397,7 +397,7 @@ const CreateTour = () => {
                 <Row>
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="cupoMinimo">
-                            <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Minimo</Form.Label>
+                            <Form.Label column className={error.cupoMinimo?'error':''}>Cupo Mínimo</Form.Label>
                             <Col >
                             <Form.Control
                             required
@@ -414,7 +414,7 @@ const CreateTour = () => {
 
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="cupoMaximo">
-                            <Form.Label column className={error.cupoMaximo?'error':''}>Cupo Maximo</Form.Label>
+                            <Form.Label column className={error.cupoMaximo?'error':''}>Cupo Máximo</Form.Label>
                             <Col >
                             <Form.Control
                             required
@@ -462,7 +462,7 @@ const CreateTour = () => {
 
                     <Col>
                         <Form.Group as={Row} className="mb-3" controlId="duracion">
-                            <Form.Label column className={error.duracion?'error':''}>Duracion</Form.Label>
+                            <Form.Label column className={error.duracion?'error':''}>Duración</Form.Label>
                             <Col >
                             <Form.Control
                             required
