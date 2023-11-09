@@ -689,7 +689,7 @@ const EditTour = () => {
                     <Col></Col>
 
                     <Col>
-                        <Button className="new" onClick={editTour}>Editar Paseo</Button>
+                        <Button className="new" onClick={editTour}>Guardar</Button>
                     </Col>
                     <Col>
                         <Button className="cancel" onClick={goBack}>Cancelar</Button>
