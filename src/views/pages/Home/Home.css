@@ -1,12 +1,12 @@
 .section-intro {
-    height: 100vh;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: 100% 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    position: absolute;
+    z-index: 10000;
+    top: 270px;
+    right: 0px;
 }
 
 .section-intro-title,
