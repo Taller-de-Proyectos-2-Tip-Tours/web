@@ -92,6 +92,7 @@ const Comments = () => {
                     {tour&&<Row style={{marginTop:12,marginBottom:12,alignItems:'center'}}>
                         <Col><h2>Valoraciones</h2></Col>
                         <Col><Rating defaultValue={tour.averageRating} precision={0.1} readOnly /></Col>
+                        <Col>Cantidad de Puntuaciones: {comments.length}</Col>
                     </Row>}
                     <Row style={{justifyContent:'center'}}>
                         <h2>Reseñas</h2>
