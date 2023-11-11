@@ -24,7 +24,6 @@ const Comments = () => {
 
     const [comments,setComents] = useState([])
     const [commentsToShow,setComentsToShow] = useState([])
-    const [rating,setRating] = useState(null)
 
     const [page,setPage] = useState(0)
     const [pageSize,setPageSize] = useState(5)
@@ -60,20 +59,9 @@ const Comments = () => {
             setComentsToShow(result.slice(page*pageSize,(page+1)*pageSize))
             setPageCant(Math.ceil(result.length/pageSize))
             
-            console.log('rating',rating)
             setComents([...result])
         })
     }
-
-    useEffect(()=>{
-        if(comments.length>0) {
-            let rating = 0
-            const notCero = comments.filter((item)=>item.stars!==0)
-            const total = notCero.length
-            rating = notCero.map(item=>item.stars).reduce((prev,curr)=>prev+curr)
-            setRating(rating/total)
-        }
-    },[comments])
 
     useEffect(()=>{
         if(comments.length) setComentsToShow(comments.slice(page*pageSize,(page+1)*pageSize))
@@ -101,9 +89,10 @@ const Comments = () => {
                     </Row>
                 </Card.Title>
                 <Card.Body>
-                    {rating&&<Row style={{marginTop:12,marginBottom:12,alignItems:'center'}}>
+                    {tour&&<Row style={{marginTop:12,marginBottom:12,alignItems:'center'}}>
                         <Col><h2>Valoraciones</h2></Col>
-                        <Col><Rating defaultValue={rating} precision={0.5} readOnly /></Col>
+                        <Col><Rating defaultValue={tour.averageRating} precision={0.1} readOnly /></Col>
+                        <Col>Cantidad de Puntuaciones: {comments.length}</Col>
                     </Row>}
                     <Row style={{justifyContent:'center'}}>
                         <h2>Reseñas</h2>
