@@ -316,8 +316,15 @@ const EditTour = () => {
             } catch (error) {
                 setLoading(false)
                 let errorMsg = []
-                for(const err in error.response.data) {
-                    errorMsg.push(`${err}: ${error.response.data[err].join(' ')}`)
+                if(error.response) {
+                    for(const err in error.response.data) {
+                        console.log(err,error)
+                        errorMsg.push(`Error: ${Array.isArray(error.response.data[err])?error.response.data[err].join(' '):error.response.data[err]}`)
+                    }
+                    setModalMessage(errorMsg)
+                    showModal(true)
+                    setLoading(false)
+                    console.log(error.response.data)
                 }
                 setModalMessage(errorMsg)
                 showModal(true)
@@ -355,10 +362,24 @@ const EditTour = () => {
             showModal(true)
             setLoading(false)
             showCacelarReservaPopUp(null)
-        }).catch((err)=>{
+        }).catch((error)=>{
             setLoading(false)
             showCacelarReservaPopUp(null)
-            console.log(err)
+            console.log(error)
+            let errorMsg = []
+            if(error.response) {
+                for(const err in error.response.data) {
+                    console.log(err,error)
+                    errorMsg.push(`Error: ${Array.isArray(error.response.data[err])?error.response.data[err].join(' '):error.response.data[err]}`)
+                }
+                setModalMessage(errorMsg)
+                showModal(true)
+                setLoading(false)
+                console.log(error.response.data)
+            }
+            setModalMessage(errorMsg)
+            showModal(true)
+            setLoading(false)
         })
     }
 
