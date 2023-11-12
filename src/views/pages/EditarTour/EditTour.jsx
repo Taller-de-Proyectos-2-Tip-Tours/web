@@ -745,7 +745,7 @@ const EditTour = () => {
                     <Modal.Title>¿Quiere Cancelar la reserva?</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Si cancela la Fecha se enviara una notificacion a las persona anotadas
+                    Si cancela la Fecha se enviará una notificacion a las personas anotadas
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={()=>{
