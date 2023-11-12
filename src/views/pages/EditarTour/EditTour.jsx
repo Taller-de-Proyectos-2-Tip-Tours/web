@@ -347,7 +347,7 @@ const EditTour = () => {
     const cancelarReserva = async (date) => {
         setLoading(true)
         const token = await getToken()
-        apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm:ss')}`,{headers:{'token':token}})
+        apiClient.put(`tours/cancel?tourId=${id}&date=${date.format('YYYY-MM-DDTHH:mm:ss')}`,{},{headers:{'token':token}})
         .then((result)=>{
             console.log(result)
             searchTours()
