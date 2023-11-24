@@ -48,7 +48,7 @@ const Home = () => {
             </Carousel>
             <div className='section-intro' style={{left:user===null?45:185}}>
                 <div className='section-intro-title'>
-                    El futuro del Turismo
+                    El futuro del turismo
                 </div>
                 {user===null&&<IconButton
                 onClick={onLogin}
