@@ -30,7 +30,7 @@ import TourList from '../pages/ToursList/ToursList';
 import CreateTour from '../pages/CreateTour/CreateTour';
 import EditTour from '../pages/EditarTour/EditTour';
 import Comments from '../pages/Comments/Comments.jsx';
-
+import Profile from '../pages/Profile/Profile.jsx';
 
 
 function Copyright(props) {
@@ -199,6 +199,7 @@ export default function Dashboard() {
                   <Route path={Constants.ROUTES.EDIT_LIST} element={<EditTour />}></Route>
                   <Route path={Constants.ROUTES.COMENTS} element={<Comments />}></Route>
                   <Route path={Constants.ROUTES.NEW_TOUR} element={<CreateTour />}></Route>
+                  <Route path={Constants.ROUTES.PROFILE} element={<Profile />}></Route>
                   <Route path='*' element={<Home />} />
                 </Routes>
               </DefaultLayout>
