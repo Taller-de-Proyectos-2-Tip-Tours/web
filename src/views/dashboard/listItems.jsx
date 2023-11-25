@@ -12,6 +12,14 @@ const MainListItems = () => {
   
   return (
       <>
+      <Link to={constants.ROUTES.PROFILE} style={{color:"white"}}>
+          <ListItemButton>
+            <ListItemIcon style={{color:"white"}}>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Perfil" />
+          </ListItemButton>
+        </Link>
         <Link to={constants.ROUTES.TOUR_LIST} style={{color:"white"}}>
           <ListItemButton>
             <ListItemIcon style={{color:"white"}}>
